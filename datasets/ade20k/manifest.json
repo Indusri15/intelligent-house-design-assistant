@@ -1,0 +1,20 @@
+{
+  "dataset": "ADE20K Residential Scene Parsing Benchmark",
+  "version": "2016/2021",
+  "num_classes": 150,
+  "target_scenes": [
+    "living_room",
+    "master_bedroom",
+    "bedroom",
+    "kitchen",
+    "dining_room",
+    "bathroom",
+    "pooja_room",
+    "staircase",
+    "balcony",
+    "house_exterior"
+  ],
+  "terms": "Non-commercial research and academic educational use only (MIT CSAIL)",
+  "officialUrl": "https://ade20k.csail.mit.edu/",
+  "githubUrl": "https://github.com/CSAILVision/ADE20K"
+}

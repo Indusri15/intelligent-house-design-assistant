@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "zones": [
+    { "id": "NE", "name": "North-East", "sanskrit": "Ishanya", "element": "Water", "color": "#06b6d4" },
+    { "id": "E", "name": "East", "sanskrit": "Indra", "element": "Light", "color": "#eab308" },
+    { "id": "SE", "name": "South-East", "sanskrit": "Agneya", "element": "Fire", "color": "#f97316" },
+    { "id": "S", "name": "South", "sanskrit": "Yama", "element": "Earth", "color": "#ef4444" },
+    { "id": "SW", "name": "South-West", "sanskrit": "Niruthi", "element": "Stability", "color": "#8b5cf6" },
+    { "id": "W", "name": "West", "sanskrit": "Varuna", "element": "Air", "color": "#3b82f6" },
+    { "id": "NW", "name": "North-West", "sanskrit": "Vayu", "element": "Wind", "color": "#10b981" },
+    { "id": "N", "name": "North", "sanskrit": "Kubera", "element": "Prosperity", "color": "#14b8a6" },
+    { "id": "CENTER", "name": "Center", "sanskrit": "Brahmasthan", "element": "Space", "color": "#f59e0b" }
+  ],
+  "rules": [
+    {
+      "id": "RULE_ENTRANCE",
+      "roomType": "entrance",
+      "displayName": "Main Entrance (Simha Dwara)",
+      "priority": "HIGH",
+      "bestZones": ["NE", "E", "N"],
+      "neutralZones": ["W", "S"],
+      "incompatibleZones": ["SW", "SE"],
+      "explanation": "The main entrance acts as the primary transition node for solar energy and airflow. North and East entrances allow positive early morning daylight.",
+      "remedies": {
+        "SW": "Install a heavy brass threshold or wooden foyer screen to dampen direct negative environmental exposure.",
+        "SE": "Place indoor green plants and warm ambient lighting near the vestibule."
+      }
+    },
+    {
+      "id": "RULE_KITCHEN",
+      "roomType": "kitchen",
+      "displayName": "Kitchen (Agni Sthana)",
+      "priority": "HIGH",
+      "bestZones": ["SE", "NW"],
+      "neutralZones": ["E", "S"],
+      "incompatibleZones": ["NE", "SW", "CENTER"],
+      "explanation": "South-East is ruled by the Fire element (Agni). Placing cooking hubs here prevents cross-draft smoke circulation and aligns with natural southeast thermal winds.",
+      "remedies": {
+        "NE": "Use yellow/copper wall tiles behind the stove and ensure powerful chimney exhaust ventilation.",
+        "SW": "Place yellow stone crystal pyramids and keep cooking platform oriented toward the East."
+      }
+    },
+    {
+      "id": "RULE_MASTER_BEDROOM",
+      "roomType": "master_bedroom",
+      "displayName": "Master Bedroom (Niruthi)",
+      "priority": "HIGH",
+      "bestZones": ["SW", "S", "W"],
+      "neutralZones": ["NW"],
+      "incompatibleZones": ["NE", "SE", "CENTER"],
+      "explanation": "South-West is the earth zone representing stability, weight, and quietude, optimal for restful sleep and family anchoring.",
+      "remedies": {
+        "NE": "Position bed headboard strictly towards South and apply earthy terracotta or warm beige tones.",
+        "SE": "Avoid red or fire-themed decor; use light pastel blues and grounding rugs."
+      }
+    },
+    {
+      "id": "RULE_POOJA_ROOM",
+      "roomType": "pooja",
+      "displayName": "Pooja / Meditation Room (Ishanya)",
+      "priority": "HIGH",
+      "bestZones": ["NE", "E", "N"],
+      "neutralZones": ["W"],
+      "incompatibleZones": ["S", "SW", "SE"],
+      "explanation": "North-East receives maximum morning infrared and ultraviolet rays, fostering tranquility, clarity, and meditative focus.",
+      "remedies": {
+        "S": "Install white marble altar fixtures and keep the prayer direction facing East or North.",
+        "SW": "Ensure prayer space is elevated on a light wooden platform."
+      }
+    },
+    {
+      "id": "RULE_BATHROOM",
+      "roomType": "bathroom",
+      "displayName": "Toilets & Bathrooms (Apana Sthana)",
+      "priority": "MEDIUM",
+      "bestZones": ["NW", "W", "S"],
+      "neutralZones": ["SE", "E"],
+      "incompatibleZones": ["NE", "CENTER", "SW"],
+      "explanation": "Waste disposal zones should align with West or North-West wind circulation so exhaust odors drift away from living spaces.",
+      "remedies": {
+        "NE": "Keep bathroom door permanently closed with magnetic latches and install continuous mechanical exhaust.",
+        "CENTER": "Relocate plumbing riser shafts to exterior perimeter walls."
+      }
+    },
+    {
+      "id": "RULE_STAIRCASE",
+      "roomType": "staircase",
+      "displayName": "Staircase (Heavy Structural Load)",
+      "priority": "MEDIUM",
+      "bestZones": ["S", "SW", "W"],
+      "neutralZones": ["SE", "NW"],
+      "incompatibleZones": ["NE", "CENTER"],
+      "explanation": "Heavy structural concrete stairs are best positioned on the southern/western facade to block hot afternoon sun.",
+      "remedies": {
+        "NE": "Use open-tread steel/timber cantilevered stairs rather than massive solid concrete pour."
+      }
+    },
+    {
+      "id": "RULE_LIVING_ROOM",
+      "roomType": "living",
+      "displayName": "Living / Family Hall",
+      "priority": "LOW",
+      "bestZones": ["E", "N", "NE", "NW"],
+      "neutralZones": ["W", "SE"],
+      "incompatibleZones": ["SW"],
+      "explanation": "Social gathering spaces thrive with bright, welcoming natural daylight in the northern and eastern quarters."
+    }
+  ]
+}

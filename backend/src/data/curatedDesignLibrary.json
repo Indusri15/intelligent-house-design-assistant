@@ -1,0 +1,139 @@
+{
+  "interior": {
+    "living_room": {
+      "Modern": {
+        "title": "Modern Minimalist Living Room Concept",
+        "description": "Open-concept living space with neutral tones, clean geometric lines, recessed LED lighting, and large format vitrified tile flooring.",
+        "colors": ["#F8FAFC", "#334155", "#64748B", "#D97706"],
+        "materials": [
+          { "name": "Glazed Vitrified Floor Tiles (4x2 ft)", "spec": "Kajaria / Simpolo GVT Matte Finish", "qty": 220, "unit": "sq.ft", "unitCost": 85, "totalCost": 18700 },
+          { "name": "Saint-Gobain Gypsum False Ceiling", "spec": "12.5mm Gypsum with GI Perimeter & Warm Cove LED", "qty": 200, "unit": "sq.ft", "unitCost": 95, "totalCost": 19000 },
+          { "name": "Royale Luxury Acrylic Emulsion", "spec": "Asian Paints Royale + Accent Wall", "qty": 550, "unit": "sq.ft", "unitCost": 35, "totalCost": 19250 },
+          { "name": "Floating TV Console & Fluted Panel", "spec": "Marine Ply with Teak Veneer & Profile Lighting", "qty": 1, "unit": "lump_sum", "unitCost": 45000, "totalCost": 45000 },
+          { "name": "Architectural Magnetic Track Lights", "spec": "Warm White 3000K Anti-Glare Spots", "qty": 6, "unit": "nos", "unitCost": 2200, "totalCost": 13200 }
+        ],
+        "estimatedCost": 115150
+      },
+      "Traditional Indian": {
+        "title": "Heritage Traditional Indian Living Room",
+        "description": "Rich warm wood carvings, brass accents, terracotta accents, jali screen partitions, and polished marble flooring.",
+        "colors": ["#FFFBEB", "#B45309", "#78350F", "#991B1B"],
+        "materials": [
+          { "name": "Indian Polished Marble / Kota Stone", "spec": "Makrana White / Polished Kota with Brass Inlay", "qty": 220, "unit": "sq.ft", "unitCost": 145, "totalCost": 31900 },
+          { "name": "Solid Teak Wood Rafter Ceiling", "spec": "Exposed Teak Wood Beams with Warm Spotlights", "qty": 180, "unit": "sq.ft", "unitCost": 165, "totalCost": 29700 },
+          { "name": "Carved Wooden Jali Partition", "spec": "CNC Teak Wood CNC Cut Floral Jali", "qty": 40, "unit": "sq.ft", "unitCost": 380, "totalCost": 15200 },
+          { "name": "Brass Sconces & Hanging Jhula Fixtures", "spec": "Antique Brass Heavy Cast Fixtures", "qty": 1, "unit": "lump_sum", "unitCost": 35000, "totalCost": 35000 }
+        ],
+        "estimatedCost": 111800
+      },
+      "Luxury": {
+        "title": "Ultra-Luxury Italian Marble Grand Living Lounge",
+        "description": "High-end Italian Statuario marble, acoustic wood slat paneling, smart dimmable magnetic track lights, and plush velvet sectional seating.",
+        "colors": ["#090A0F", "#1E293B", "#F59E0B", "#E2E8F0"],
+        "materials": [
+          { "name": "Imported Italian Statuario Marble", "spec": "Mirror Polished Book-Matched 18mm Slabs", "qty": 240, "unit": "sq.ft", "unitCost": 380, "totalCost": 91200 },
+          { "name": "Acoustic Fluted Veneer Wall Paneling", "spec": "Charcoal Smoked Oak Veneer with Backlit LED", "qty": 120, "unit": "sq.ft", "unitCost": 280, "totalCost": 33600 },
+          { "name": "Smart WiFi Automation Lighting Grid", "spec": "Schneider KNX Dimmable Architectural Downlights", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
+        ],
+        "estimatedCost": 189800
+      }
+    },
+    "master_bedroom": {
+      "Modern": {
+        "title": "Modern Master Bedroom Retreat",
+        "description": "Calming neutral palette, wooden vitrified plank flooring, upholstered headboard accent wall, and floor-to-ceiling wardrobes.",
+        "colors": ["#F1F5F9", "#475569", "#0F172A", "#38BDF8"],
+        "materials": [
+          { "name": "Vitrified Wooden Planks (8x48 in)", "spec": "Somany Rustic Wood Texture", "qty": 180, "unit": "sq.ft", "unitCost": 95, "totalCost": 17100 },
+          { "name": "Floor-to-Ceiling Wardrobes with Loft", "spec": "BWP Marine Ply with Anti-Scratch Acrylic Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 85000, "totalCost": 85000 },
+          { "name": "Upholstered King Headboard Wall", "spec": "High-Density Foam Velvet Cushioning with Fluted Border", "qty": 1, "unit": "lump_sum", "unitCost": 32000, "totalCost": 32000 }
+        ],
+        "estimatedCost": 134100
+      },
+      "Luxury": {
+        "title": "Presidential Master Suite with Walk-In Wardrobe",
+        "description": "Hardwood engineered flooring, tinted fluted glass walk-in wardrobe with profile LED, ambient perimeter cove ceiling, and reading sconces.",
+        "colors": ["#1E1B4B", "#312E81", "#F59E0B", "#F8FAFC"],
+        "materials": [
+          { "name": "Engineered Oak Hardwood Flooring", "spec": "14mm Multi-Layer Engineered German Oak", "qty": 200, "unit": "sq.ft", "unitCost": 280, "totalCost": 56000 },
+          { "name": "Walk-In Profile Tinted Glass Wardrobe", "spec": "Rose Gold Aluminium Frame with Integrated Motion Sensor LEDs", "qty": 1, "unit": "lump_sum", "unitCost": 145000, "totalCost": 145000 },
+          { "name": "Italian Wall Sconces & Smart Controls", "spec": "Dimmable Touch Keypads & Bedside Reading Booms", "qty": 1, "unit": "lump_sum", "unitCost": 38000, "totalCost": 38000 }
+        ],
+        "estimatedCost": 239000
+      }
+    },
+    "kitchen": {
+      "Modern": {
+        "title": "Sleek Modular L-Shaped Kitchen",
+        "description": "BWP marine plywood modular units, anti-fingerprint acrylic shutters, black galaxy granite countertop, and soft-close tandem drawers.",
+        "colors": ["#FFFFFF", "#0F172A", "#64748B", "#F59E0B"],
+        "materials": [
+          { "name": "BWP Marine Ply Modular Base & Wall Units", "spec": "CenturyPly 710 with Merino Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 125000, "totalCost": 125000 },
+          { "name": "Black Galaxy Polished Granite Counter (18mm)", "spec": "Double Chamfered Edge with Sink Cutout", "qty": 45, "unit": "sq.ft", "unitCost": 185, "totalCost": 8325 },
+          { "name": "Under-Cabinet Profile LED Strip Lighting", "spec": "IP65 Warm White 12V with Concealed Driver", "qty": 20, "unit": "rft", "unitCost": 350, "totalCost": 7000 }
+        ],
+        "estimatedCost": 140325
+      },
+      "Luxury": {
+        "title": "Luxury Island Modular Kitchen with Quartz Counter",
+        "description": "Imported Calacatta quartz waterfall island, PU lacquered handleless cabinetry, built-in appliance tall units, and smart sensor task lighting.",
+        "colors": ["#18181B", "#27272A", "#D4AF37", "#FAFAFA"],
+        "materials": [
+          { "name": "Imported Quartz Waterfall Island Counter", "spec": "20mm Solid Engineered Calacatta Gold Quartz", "qty": 65, "unit": "sq.ft", "unitCost": 420, "totalCost": 27300 },
+          { "name": "PU Lacquered German Mechanism Cabinets", "spec": "Blum Servo-Drive Motorized Lift-Up & Tandem Soft-Close", "qty": 1, "unit": "lump_sum", "unitCost": 220000, "totalCost": 220000 }
+        ],
+        "estimatedCost": 247300
+      }
+    },
+    "pooja_room": {
+      "Traditional Indian": {
+        "title": "Sacred Vastu Pooja Mandir with Brass Inlay",
+        "description": "Solid Burma teakwood carved mandir, brass bell installations, backlit Om / Gayatri mantra glass panel, and polished Makrana marble pedestal.",
+        "colors": ["#FFFBEB", "#B45309", "#FEF08A", "#78350F"],
+        "materials": [
+          { "name": "Carved Solid Teakwood Mandir Architecture", "spec": "Gopuram Carving & Brass Pillar Pillars", "qty": 1, "unit": "lump_sum", "unitCost": 85000, "totalCost": 85000 },
+          { "name": "Makrana White Marble Pedestal & Floor", "spec": "Pristine White Marble with Yellow Onyx Inlay", "qty": 50, "unit": "sq.ft", "unitCost": 220, "totalCost": 11000 },
+          { "name": "Backlit Sacred Geometry Acrylic / Onyx", "spec": "CNC Cut Brass Backlit Panel with Warm LED", "qty": 1, "unit": "lump_sum", "unitCost": 24000, "totalCost": 24000 }
+        ],
+        "estimatedCost": 120000
+      }
+    }
+  },
+  "exterior": {
+    "Modern Indian house": {
+      "title": "Modern Indian Cubical Elevation with Box Projections",
+      "description": "Multi-tier box facade projections with natural sandstone cladding, vertical WPC louvers, toughened glass balcony, and warm architectural uplighting.",
+      "colors": ["#F8FAFC", "#334155", "#D97706", "#0F172A"],
+      "materials": [
+        { "name": "Exterior Teak Sandstone Cladding", "spec": "Machine Cut Natural Sandstone with Water Repellent Sealant", "qty": 350, "unit": "sq.ft", "unitCost": 180, "totalCost": 63000 },
+        { "name": "WPC Exterior Fluted Architectural Louvers", "spec": "Weatherproof Wood Plastic Composite 50x50mm", "qty": 180, "unit": "rft", "unitCost": 220, "totalCost": 39600 },
+        { "name": "12mm Toughened Glass Balcony Railing", "spec": "Continuous SS 304 Base U-Channel System", "qty": 30, "unit": "rft", "unitCost": 1200, "totalCost": 36000 },
+        { "name": "Architectural Facade Up-Down Spotlights", "spec": "IP67 Die-Cast Aluminum 10W Warm Spotlights", "qty": 8, "unit": "nos", "unitCost": 2800, "totalCost": 22400 },
+        { "name": "CNC Laser Cut Steel Gate with WPC", "spec": "Heavy Gauge MS Frame with Wood Composite Inlays", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
+      ],
+      "estimatedCost": 226000
+    },
+    "Traditional Indian": {
+      "title": "Heritage Traditional Indian Courtyard Villa Elevation",
+      "description": "Sloped Mangalore tile roof eaves, carved teak verandah pillars, exposed wire-cut red brick plinth, brass finials, and stone paved sitout.",
+      "colors": ["#FFFBEB", "#B45309", "#78350F", "#15803D"],
+      "materials": [
+        { "name": "Clay Mangalore Roof Tiles with Understructure", "spec": "Terracotta Glazed Weatherproof Sloped Roof Tiles", "qty": 450, "unit": "sq.ft", "unitCost": 140, "totalCost": 63000 },
+        { "name": "Solid Teak Wood Carved Verandah Pillars", "spec": "Traditional Fluted Pillars with Stone Base Padukas", "qty": 4, "unit": "nos", "unitCost": 18000, "totalCost": 72000 },
+        { "name": "Wire-cut Exposed Red Brick Masonry & Plinth", "spec": "Pressed Machine Made Clay Bricks with Raked Mortar Grouting", "qty": 300, "unit": "sq.ft", "unitCost": 95, "totalCost": 28500 }
+      ],
+      "estimatedCost": 163500
+    },
+    "Premium Luxury": {
+      "title": "Ultra-Luxury Cantilever Villa with Double-Height Glazing",
+      "description": "Floating cantilevered first floor, large format porcelain slab facade, frameless glass curtain walling, motorized teak entrance, and infinity perimeter landscape.",
+      "colors": ["#0F172A", "#1E293B", "#F59E0B", "#F8FAFC"],
+      "materials": [
+        { "name": "Large Format Porcelain Facade Slabs", "spec": "1200x2400mm Slim Porcelain Tiles with Dry Cladding Clamps", "qty": 550, "unit": "sq.ft", "unitCost": 320, "totalCost": 176000 },
+        { "name": "Double-Height Acoustic Curtain Glazing", "spec": "DGU Double Glazed Low-E Glass with Thermal Break Aluminum Profile", "qty": 220, "unit": "sq.ft", "unitCost": 850, "totalCost": 187000 },
+        { "name": "Motorized Teak Wood Sliding Gate", "spec": "Italian Motor Automation with Burma Teak Paneling", "qty": 1, "unit": "lump_sum", "unitCost": 150000, "totalCost": 150000 }
+      ],
+      "estimatedCost": 513000
+    }
+  }
+}
