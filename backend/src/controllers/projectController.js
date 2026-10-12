@@ -83,13 +83,13 @@ exports.createProject = async (req, res, next) => {
         projectId,
         ...floorPlanResult
       });
-      await Project.findByIdAndUpdate(projectId, { activeFloorPlanId: savedFloorPlan._id });
+      newProject = await Project.findByIdAndUpdate(projectId, { activeFloorPlanId: savedFloorPlan._id }, { new: true });
     } else {
       savedFloorPlan = await fallbackDb.floorPlans.create({
         projectId,
         ...floorPlanResult
       });
-      await fallbackDb.projects.findByIdAndUpdate(projectId, { activeFloorPlanId: savedFloorPlan._id });
+      newProject = await fallbackDb.projects.findByIdAndUpdate(projectId, { activeFloorPlanId: savedFloorPlan._id });
     }
 
     // 2. Evaluate Vastu
@@ -235,6 +235,13 @@ exports.updateProject = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Unauthorized: You do not own this project' });
     }
 
+    // Recalculate plot area if plot length or width updated
+    if (req.body.plot && req.body.plot.length && req.body.plot.width) {
+      req.body.plot.area = Number(req.body.plot.length) * Number(req.body.plot.width);
+    }
+
+    req.body.updatedAt = new Date();
+
     let updated;
     if (getMongoStatus()) {
       updated = await Project.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
@@ -242,7 +249,39 @@ exports.updateProject = async (req, res, next) => {
       updated = await fallbackDb.projects.findByIdAndUpdate(id, req.body);
     }
 
-    res.status(200).json({ success: true, message: 'Project updated successfully', project: updated });
+    // If auto-regenerate was requested, synthesize new floor plan, Vastu and BOQ
+    let regeneratedBundle = null;
+    if (req.query.regenerate === 'true') {
+      const planResult = generateGeometricFloorPlan(updated);
+      let plan;
+      if (getMongoStatus()) {
+        plan = await FloorPlan.create({ projectId: id, ...planResult });
+        await Project.findByIdAndUpdate(id, { activeFloorPlanId: plan._id });
+      } else {
+        plan = await fallbackDb.floorPlans.create({ projectId: id, ...planResult });
+        await fallbackDb.projects.findByIdAndUpdate(id, { activeFloorPlanId: plan._id });
+      }
+
+      const vastu = evaluateVastuCompliance(updated, plan);
+      const boq = calculateProjectBOQ(updated, plan, updated.selectedPackage);
+
+      if (getMongoStatus()) {
+        await VastuResult.findOneAndUpdate({ projectId: id }, vastu, { upsert: true });
+        await CostEstimate.findOneAndUpdate({ projectId: id }, boq, { upsert: true });
+      } else {
+        await fallbackDb.vastuResults.create({ projectId: id, ...vastu });
+        await fallbackDb.costEstimates.create({ projectId: id, ...boq });
+      }
+
+      regeneratedBundle = { floorPlan: plan, vastu, boq };
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Project requirements updated successfully',
+      project: updated,
+      regenerated: regeneratedBundle
+    });
   } catch (error) {
     next(error);
   }

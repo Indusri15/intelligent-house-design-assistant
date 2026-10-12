@@ -140,6 +140,39 @@ export const FloorPlanViewer = ({ floorPlan, project }) => {
 
       </div>
 
+      {/* Architectural Blueprint Legend Panel for Homeowners */}
+      <div className="p-3 bg-white border-t border-slate-200 text-xs">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Plan Symbol Legend & Standards:</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-[11px] text-slate-600">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-3.5 rounded bg-slate-800 shrink-0"></span>
+            <span>External 9" Walls</span>
+          </div>
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-3.5 rounded bg-slate-400 shrink-0"></span>
+            <span>Internal 4.5" Walls</span>
+          </div>
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-3.5 rounded border border-blue-500 border-dashed shrink-0"></span>
+            <span>Door Swing Arc</span>
+          </div>
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-1.5 rounded bg-sky-400 shrink-0"></span>
+            <span>Glazed Windows</span>
+          </div>
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-3.5 rounded bg-amber-100 border border-amber-300 shrink-0"></span>
+            <span>Vastu Quadrants</span>
+          </div>
+          <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="w-3.5 h-3.5 rounded bg-red-500 shrink-0 text-[9px] text-white font-bold flex items-center justify-center">N</span>
+            <span>True North</span>
+          </div>
+        </div>
+      </div>
+
       {/* Floor Summary Footer Bar */}
       <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
         <div>

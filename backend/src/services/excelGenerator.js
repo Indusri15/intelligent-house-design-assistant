@@ -74,26 +74,25 @@ async function generateProjectExcel(data, res) {
     });
   });
 
-  // Sheet 3: Package Comparison
-  const pkgSheet = workbook.addWorksheet('Package Comparison');
-  pkgSheet.columns = [
-    { header: 'Specification Metric', key: 'metric', width: 30 },
-    { header: 'BASIC Package', key: 'basic', width: 28 },
-    { header: 'MEDIUM Package', key: 'medium', width: 28 },
-    { header: 'RICH Package', key: 'rich', width: 28 }
+  // Sheet 3: Financial Summary & Cost Allocation
+  const finSheet = workbook.addWorksheet('Financial Summary');
+  finSheet.columns = [
+    { header: 'Cost Head / Component', key: 'head', width: 32 },
+    { header: 'Allocated Amount (INR)', key: 'amount', width: 24 },
+    { header: 'Share (%)', key: 'share', width: 14 },
+    { header: 'Scope & Specifications', key: 'notes', width: 44 }
   ];
-  pkgSheet.getRow(1).eachCell(cell => Object.assign(cell, headerStyle));
+  finSheet.getRow(1).eachCell(cell => Object.assign(cell, headerStyle));
 
-  pkgSheet.addRows([
-    { metric: 'Cost per Square Foot', basic: `₹ ${boq.packages?.basic?.costPerSqFt}`, medium: `₹ ${boq.packages?.medium?.costPerSqFt}`, rich: `₹ ${boq.packages?.rich?.costPerSqFt}` },
-    { metric: 'Total Estimated Cost', basic: `₹ ${boq.packages?.basic?.totalCost?.toLocaleString('en-IN')}`, medium: `₹ ${boq.packages?.medium?.totalCost?.toLocaleString('en-IN')}`, rich: `₹ ${boq.packages?.rich?.totalCost?.toLocaleString('en-IN')}` },
-    { metric: 'Budget Difference', basic: `₹ ${boq.packages?.basic?.diffFromBudget?.toLocaleString('en-IN')}`, medium: `₹ ${boq.packages?.medium?.diffFromBudget?.toLocaleString('en-IN')}`, rich: `₹ ${boq.packages?.rich?.diffFromBudget?.toLocaleString('en-IN')}` },
-    { metric: 'Material Cost Split', basic: `₹ ${boq.packages?.basic?.materialsCost?.toLocaleString('en-IN')}`, medium: `₹ ${boq.packages?.medium?.materialsCost?.toLocaleString('en-IN')}`, rich: `₹ ${boq.packages?.rich?.materialsCost?.toLocaleString('en-IN')}` },
-    { metric: 'Labour Cost Split', basic: `₹ ${boq.packages?.basic?.labourCost?.toLocaleString('en-IN')}`, medium: `₹ ${boq.packages?.medium?.labourCost?.toLocaleString('en-IN')}`, rich: `₹ ${boq.packages?.rich?.labourCost?.toLocaleString('en-IN')}` },
-    { metric: 'Flooring Finish', basic: 'Vitrified Standard 2x2', medium: 'Glazed 4x2 GVT', rich: 'Italian Marble / Large Slab' },
-    { metric: 'Windows Profile', basic: 'Aluminum 2-Track', medium: 'UPVC 3-Track + Mesh', rich: 'Acoustic Sound-Proof UPVC' },
-    { metric: 'Kitchen Finish', basic: 'Laminated Semi-Modular', medium: 'Acrylic Modular Soft-Close', rich: 'PU Lacquered Quartz Island' },
-    { metric: 'False Ceiling', basic: 'Excluded', medium: 'Living & Dining Included', rich: 'Full Home Magnetic Track Cove' }
+  const totalCost = boq.totalEstimatedCost || 1;
+  finSheet.addRows([
+    { head: 'Structural Materials', amount: `₹ ${Number(boq.summary?.materialCost || 0).toLocaleString('en-IN')}`, share: `${Math.round(((boq.summary?.materialCost || 0) / totalCost) * 100)}%`, notes: 'Cement, steel, sand, aggregate, AAC/brickwork' },
+    { head: 'Labour & Masonry', amount: `₹ ${Number(boq.summary?.labourCost || 0).toLocaleString('en-IN')}`, share: `${Math.round(((boq.summary?.labourCost || 0) / totalCost) * 100)}%`, notes: 'Excavation, bar bending, casting, plastering' },
+    { head: 'Contractor Supervision (10%)', amount: `₹ ${Number(boq.summary?.contractorCost || 0).toLocaleString('en-IN')}`, share: '10%', notes: 'Civil contractor site management and execution' },
+    { head: 'Interior & Millwork', amount: `₹ ${Number(boq.summary?.interiorCost || 0).toLocaleString('en-IN')}`, share: `${Math.round(((boq.summary?.interiorCost || 0) / totalCost) * 100)}%`, notes: 'Modular kitchen, wardrobes, false ceiling' },
+    { head: 'Architectural & Engineering (3%)', amount: `₹ ${Number(boq.summary?.otherExpenses || 0).toLocaleString('en-IN')}`, share: '3%', notes: 'Structural drawings and municipal documentation' },
+    { head: 'Contingency Reserve (5%)', amount: `₹ ${Number(boq.summary?.contingency || 0).toLocaleString('en-IN')}`, share: '5%', notes: 'Site variance and unforeseen material fluctuation buffer' },
+    { head: 'TOTAL ESTIMATED COST', amount: `₹ ${Number(boq.totalEstimatedCost || 0).toLocaleString('en-IN')}`, share: '100%', notes: `₹ ${boq.costPerSqFt} / sq.ft across ${boq.totalBuiltUpAreaSqFt} sq.ft` }
   ]);
 
   // Sheet 4: Construction Stages

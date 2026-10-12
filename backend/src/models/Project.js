@@ -35,7 +35,11 @@ const projectSchema = new mongoose.Schema({
     width: { type: Number, required: true, min: 10 },
     area: { type: Number, required: true },
     shape: { type: String, enum: ['RECTANGULAR', 'SQUARE', 'IRREGULAR'], default: 'RECTANGULAR' },
-    facingDirection: { type: String, enum: ['North', 'East', 'South', 'West'], default: 'East' },
+    facingDirection: { 
+      type: String, 
+      enum: ['North', 'East', 'South', 'West', 'North-East', 'North-West', 'South-East', 'South-West', 'NE', 'NW', 'SE', 'SW'], 
+      default: 'East' 
+    },
     roadAccess: { type: String, default: 'Front road 30ft' },
     setbacks: {
       front: { type: Number, default: 5 },
@@ -61,7 +65,11 @@ const projectSchema = new mongoose.Schema({
     familyMembers: { type: Number, default: 4 },
   },
   preferences: {
-    style: { type: String, enum: ['Modern Minimalist', 'Contemporary', 'Traditional Indian', 'Modern Luxury', 'Custom style'], default: 'Contemporary' },
+    style: { 
+      type: String, 
+      enum: ['Modern Minimalist', 'Contemporary', 'Traditional Indian', 'Modern Luxury', 'Modern Indian house', 'Minimalist', 'Premium Luxury', 'Custom style'], 
+      default: 'Contemporary' 
+    },
     flooring: { type: String, default: 'Vitrified Tiles' },
     kitchen: { type: String, default: 'Modular with Granite Counter' },
     interiorColours: { type: String, default: 'Warm Neutrals & Off-White' },

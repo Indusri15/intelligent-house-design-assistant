@@ -36,9 +36,14 @@ async function getProjectBundle(projectId) {
     await Expense.find({ projectId, isVoided: { $ne: true } }) : 
     (await fallbackDb.expenses.find({ projectId })).filter(e => !e.isVoided);
 
-  // Fallbacks if not computed yet
-  if (!vastu) vastu = evaluateVastuCompliance(project, floorPlan);
-  if (!boq) boq = calculateProjectBOQ(project, floorPlan, project.selectedPackage);
+  // Ensure Vastu and BOQ are dynamically synchronized with current floor plan geometry
+  if (!vastu || (floorPlan && vastu.createdAt && floorPlan.createdAt && new Date(floorPlan.createdAt) > new Date(vastu.createdAt))) {
+    vastu = evaluateVastuCompliance(project, floorPlan);
+  }
+
+  if (!boq || (floorPlan && floorPlan.totalBuiltUpAreaSqFt && boq.totalBuiltUpAreaSqFt !== floorPlan.totalBuiltUpAreaSqFt)) {
+    boq = calculateProjectBOQ(project, floorPlan, project.selectedPackage || 'MEDIUM');
+  }
 
   return { project, floorPlan, vastu, boq, stages, expenses };
 }
@@ -48,12 +53,19 @@ async function getProjectBundle(projectId) {
 exports.downloadPdf = async (req, res, next) => {
   try {
     const { projectId } = req.params;
+    const userId = req.user._id || req.user.id;
     const bundle = await getProjectBundle(projectId);
 
     if (!bundle) return res.status(404).json({ success: false, message: 'Project not found' });
 
+    // Resource ownership authorization check: allow project owner or administrator
+    if (bundle.project.user && bundle.project.user.toString() !== userId.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Unauthorized: You do not own this project' });
+    }
+
+    const safeFilename = `${bundle.project.name.replace(/[^a-zA-Z0-9_-]/g, '_')}_Portfolio.pdf`;
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${bundle.project.name.replace(/\s+/g, '_')}_Portfolio.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
 
     await generateProjectPdf(bundle, res);
   } catch (error) {
@@ -66,9 +78,15 @@ exports.downloadPdf = async (req, res, next) => {
 exports.downloadExcel = async (req, res, next) => {
   try {
     const { projectId } = req.params;
+    const userId = req.user._id || req.user.id;
     const bundle = await getProjectBundle(projectId);
 
     if (!bundle) return res.status(404).json({ success: false, message: 'Project not found' });
+
+    // Resource ownership authorization check: allow project owner or administrator
+    if (bundle.project.user && bundle.project.user.toString() !== userId.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Unauthorized: You do not own this project' });
+    }
 
     await generateProjectExcel(bundle, res);
   } catch (error) {

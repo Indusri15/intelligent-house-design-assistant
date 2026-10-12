@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Lock, Mail, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Building2, Lock, Mail, ArrowRight, AlertTriangle, Info } from 'lucide-react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
-  const [email, setEmail] = useState('user@housedesign.ai');
-  const [password, setPassword] = useState('User@12345');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const targetRoute = location.state?.from?.pathname || location.state?.from || '/dashboard';
+  const hasWizardDraft = typeof window !== 'undefined' && Boolean(sessionStorage.getItem('archplan_wizard_draft'));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,21 +22,11 @@ export const LoginPage = () => {
 
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate(targetRoute, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please verify credentials.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const setDemoCredentials = (role) => {
-    if (role === 'admin') {
-      setEmail('admin@housedesign.ai');
-      setPassword('Admin@12345');
-    } else {
-      setEmail('user@housedesign.ai');
-      setPassword('User@12345');
     }
   };
 
@@ -49,26 +43,13 @@ export const LoginPage = () => {
           <p className="mt-1 text-xs text-slate-500">Access your saved house projects, floor plans, and estimates.</p>
         </div>
 
-        {/* Quick Demo Fill Buttons */}
-        <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200/80 text-xs">
-          <span className="font-semibold text-blue-900 block mb-1.5">⚡ Quick Demo Login Fill:</span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setDemoCredentials('user')}
-              className="px-2.5 py-1 rounded-lg bg-white border border-blue-300 text-blue-700 hover:bg-blue-100 font-medium"
-            >
-              Demo User (user@housedesign.ai)
-            </button>
-            <button
-              type="button"
-              onClick={() => setDemoCredentials('admin')}
-              className="px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-amber-800 hover:bg-amber-100 font-medium"
-            >
-              Admin (admin@housedesign.ai)
-            </button>
+        {/* Preserved Draft Notification */}
+        {hasWizardDraft && (
+          <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center gap-2.5">
+            <Info className="w-4 h-4 shrink-0 text-blue-600" />
+            <span>Your house project specifications are safely saved. Sign in to restore your draft and generate your plans!</span>
           </div>
-        </div>
+        )}
 
         {/* Error Alert */}
         {error && (

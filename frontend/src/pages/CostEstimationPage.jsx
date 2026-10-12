@@ -91,14 +91,6 @@ export const CostEstimationPage = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            to={`/project/${id}/packages`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold hover:bg-purple-100 transition-colors"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Compare 3 Packages</span>
-          </Link>
-
           <button
             onClick={handleRecalculate}
             disabled={recalculating}

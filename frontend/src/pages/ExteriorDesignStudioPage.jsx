@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext';
-import { designApi } from '../services/api';
+import { designApi, resolveImageUrl } from '../services/api';
+import curatedLibrary from '../data/curatedDesignLibrary.json';
 import {
   Building2,
   Sparkles,
@@ -10,84 +11,87 @@ import {
   Heart,
   CheckCircle2,
   Download,
-  RotateCcw,
   Info,
-  Camera,
-  UploadCloud,
   Columns,
   History,
-  Trash2,
   Coins,
-  ShieldCheck,
-  Sun,
-  Trees,
-  DoorClosed,
-  Lightbulb,
-  Compass
+  Compass,
+  AlertCircle,
+  ChevronRight
 } from 'lucide-react';
 
 const EXTERIOR_STYLES = [
-  { id: 'Modern Indian house', label: 'Modern Indian', desc: 'Cantilevers, stone cladding & warm teakwood accents' },
+  { id: 'Modern Indian house', label: 'Modern Indian house', desc: 'Cantilevers, stone cladding & warm teakwood accents' },
   { id: 'Contemporary', label: 'Contemporary', desc: 'Asymmetrical cubical projections & large glass glazing' },
   { id: 'Traditional Indian', label: 'Traditional Indian', desc: 'Sloped Mangalore tile eaves, verandah pillars & brick plinth' },
   { id: 'Minimalist', label: 'Minimalist', desc: 'Monolithic clean volumes, crisp shadow grooves & louvers' },
   { id: 'Premium Luxury', label: 'Premium Luxury', desc: 'Ultra-wide cantilevered villa, porcelain slabs & double-height glass' }
 ];
 
-const ELEVATION_TYPES = [
-  'Modern Cubical Facade with Box Projections',
-  'Minimalist Glass & WPC Architectural Louvers',
-  'Traditional Indian Sloped Roof & Verandah',
-  'Ultra-Luxury Floating Cantilever Villa',
-  'Contemporary Double-Height Curtain Glazing'
-];
+export const getCuratedExteriorDesign = (styleId, numFloors = 2, facingDirection = '') => {
+  let styleKey = styleId || 'Modern Indian house';
+  if (styleKey === 'Modern Indian house' || styleKey === 'Modern' || styleKey === 'Modern Indian') {
+    styleKey = 'Modern Indian';
+  } else if (styleKey === 'Luxury' || styleKey === 'Luxury / Italian' || styleKey === 'Premium Luxury') {
+    styleKey = 'Premium Luxury';
+  } else if (styleKey === 'Traditional' || styleKey === 'Traditional Indian') {
+    styleKey = 'Traditional Indian';
+  } else if (styleKey === 'Minimalist') {
+    styleKey = 'Minimalist';
+  } else if (styleKey === 'Contemporary') {
+    styleKey = 'Contemporary';
+  }
 
-const FACADE_MATERIALS = [
-  'Natural Teak Sandstone Cladding & WPC Louvers',
-  'Large Format Porcelain Slabs (Concrete Texture)',
-  'Exposed Wire-cut Red Brickwork & Granite Plinth',
-  'Grooved Weatherproof Acrylic Texture Plaster'
-];
+  const floorsClamped = Math.max(1, Math.min(3, Number(numFloors) || 2));
+  const floorKey = String(floorsClamped);
 
-const BALCONY_RAILINGS = [
-  '12mm Toughened Glass with SS 304 Base Profile',
-  'Matte Black MS Vertical Louver Railing',
-  'Solid Masonry Parapet with Granite Coping'
-];
+  const styleObj = curatedLibrary.exterior?.[styleKey] || curatedLibrary.exterior?.['Modern Indian'];
+  const entry = styleObj?.[floorKey] || styleObj?.['2'] || {
+    title: `${styleKey} Villa Front Elevation`,
+    description: `Architectural exterior facade concept for ${floorsClamped}-floor ${styleKey} residence.`,
+    image: '/assets/designs/exterior_modern_2f.jpg',
+    alternatives: [],
+    materials: [],
+    estimatedCost: 200000
+  };
 
-const GATES = [
-  'CNC Laser Cut Steel with WPC Wood Planks',
-  'Minimalist Charcoal Horizontal Metal Slats',
-  'Solid Teak Wood Motorized Sliding Gate'
-];
+  const facingPrefix = facingDirection ? `${facingDirection} Facing • ` : '';
+  const displayTitle = entry.title.includes('Facing') ? entry.title : `${facingPrefix}${entry.title}`;
 
-const CURATED_EXTERIOR_PALETTES = [
-  { name: 'Warm Villa Slate', colors: ['#F8FAFC', '#334155', '#D97706'] },
-  { name: 'Pure Minimalist', colors: ['#FFFFFF', '#0F172A', '#64748B'] },
-  { name: 'Heritage Ochre', colors: ['#FFFBEB', '#B45309', '#78350F'] },
-  { name: 'Obsidian Prestige', colors: ['#090A0F', '#1E293B', '#F59E0B'] }
-];
+  return {
+    _id: `curated_ext_${styleKey}_${floorKey}`,
+    designType: 'exterior',
+    style: styleId,
+    floors: floorsClamped,
+    facingDirection: facingDirection || 'East',
+    title: displayTitle,
+    description: entry.description,
+    imageUrl: entry.image,
+    alternatives: entry.alternatives || [],
+    provider: 'curated-architectural-library',
+    model: 'curated-elevation-portfolio',
+    isFavorite: false,
+    isFinal: false,
+    costImpact: {
+      estimatedCost: entry.estimatedCost || 200000,
+      specifications: entry.materials || []
+    }
+  };
+};
 
 export const ExteriorDesignStudioPage = () => {
   const { id } = useParams();
-  const { currentProject } = useProject();
+  const { currentProject, selectProjectById } = useProject();
 
-  // Form State
+  // Read-only elevation architecture constraints derived directly from project requirements
+  const projectFloors = Math.max(1, Math.min(3, Number(currentProject?.accommodation?.floors || 2)));
+  const projectFacing = currentProject?.plot?.facingDirection || '';
+
+  // Form State: Only style is user-selectable
   const [style, setStyle] = useState('Modern Indian house');
-  const [elevationStyle, setElevationStyle] = useState('Modern Cubical Facade with Box Projections');
-  const [exteriorColors, setExteriorColors] = useState(['#F8FAFC', '#334155', '#D97706']);
-  const [facadeMaterial, setFacadeMaterial] = useState('Natural Teak Sandstone Cladding & WPC Louvers');
-  const [balconyRailing, setBalconyRailing] = useState('12mm Toughened Glass with SS 304 Base Profile');
-  const [entranceDoor, setEntranceDoor] = useState('Grand Double-Height Porch with Carved Teak Door');
-  const [boundaryGate, setBoundaryGate] = useState('CNC Laser Cut Steel with WPC Wood Planks');
-  const [lighting, setLighting] = useState('Warm Architectural Up-Down Facade Spotlights & Soffit LEDs');
-  const [landscaping, setLandscaping] = useState('Perimeter Planter Beds with Lawn Path & Paver Approach');
-  const [finishTier, setFinishTier] = useState('MEDIUM');
-  const [floors, setFloors] = useState(2);
-  const [customInstructions, setCustomInstructions] = useState('');
 
   // Generation & Gallery State
-  const [activeDesign, setActiveDesign] = useState(null);
+  const [activeDesign, setActiveDesign] = useState(() => getCuratedExteriorDesign('Modern Indian house', 2, ''));
   const [generating, setGenerating] = useState(false);
   const [genStep, setGenStep] = useState(0);
   const [history, setHistory] = useState([]);
@@ -95,30 +99,46 @@ export const ExteriorDesignStudioPage = () => {
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Sync project info on load
+  // Sync project default style & floor count on load with instant visual updates
   useEffect(() => {
     if (currentProject) {
+      let activeSt = style;
       if (currentProject.preferences?.style) {
-        const matched = EXTERIOR_STYLES.find(s => s.id.toLowerCase() === currentProject.preferences.style.toLowerCase());
-        if (matched) setStyle(matched.id);
+        const matched = EXTERIOR_STYLES.find(
+          s => s.id.toLowerCase() === currentProject.preferences.style.toLowerCase() ||
+               s.label.toLowerCase() === currentProject.preferences.style.toLowerCase()
+        );
+        if (matched) {
+          setStyle(matched.id);
+          activeSt = matched.id;
+        }
       }
-      if (currentProject.selectedPackage) {
-        setFinishTier(currentProject.selectedPackage);
-      }
-      if (currentProject.accommodation?.floors) {
-        setFloors(currentProject.accommodation.floors);
-      }
+      const pFloors = Math.max(1, Math.min(3, Number(currentProject.accommodation?.floors || 2)));
+      const pFacing = currentProject.plot?.facingDirection || '';
+      setActiveDesign(prev => {
+        if (!prev || prev._id?.startsWith('curated_')) {
+          return getCuratedExteriorDesign(activeSt, pFloors, pFacing);
+        }
+        return prev;
+      });
     }
   }, [currentProject]);
 
-  // Fetch History
+  // Fetch History & Sync
   const fetchHistory = async () => {
     try {
       const res = await designApi.getHistory(id, 'exterior');
       if (res.data.success) {
-        setHistory(res.data.designs || []);
-        if (res.data.designs?.length > 0 && !activeDesign) {
-          setActiveDesign(res.data.designs[0]);
+        const designs = res.data.designs || [];
+        setHistory(designs);
+        const match = designs.find(
+          d => d.style === style && Number(d.settings?.floors || d.floors || 2) === projectFloors
+        ) || designs.find(d => d.style === style);
+
+        if (match) {
+          setActiveDesign(match);
+        } else {
+          setActiveDesign(prev => (prev && !prev._id?.startsWith('curated_')) ? prev : getCuratedExteriorDesign(style, projectFloors, projectFacing));
         }
       }
     } catch (err) {
@@ -127,8 +147,23 @@ export const ExteriorDesignStudioPage = () => {
   };
 
   useEffect(() => {
-    if (id) fetchHistory();
+    if (id) {
+      if (selectProjectById && (!currentProject || (currentProject._id !== id && currentProject.id !== id))) {
+        selectProjectById(id);
+      }
+      fetchHistory();
+    }
   }, [id]);
+
+  // Handle Style Selection with Instant Visual Synchronization
+  const handleStyleSelect = (styleId) => {
+    setStyle(styleId);
+    const existing = history.find(
+      d => d.style === styleId && Number(d.settings?.floors || d.floors || 2) === projectFloors
+    ) || history.find(d => d.style === styleId);
+
+    setActiveDesign(existing || getCuratedExteriorDesign(styleId, projectFloors, projectFacing));
+  };
 
   // Trigger Generation
   const handleGenerate = async () => {
@@ -141,17 +176,8 @@ export const ExteriorDesignStudioPage = () => {
 
       const payload = {
         style,
-        elevationStyle,
-        exteriorColors,
-        facadeMaterial,
-        balconyRailing,
-        entranceDoor,
-        boundaryGate,
-        lighting,
-        landscaping,
-        finishTier,
-        floors,
-        customInstructions,
+        floors: projectFloors,
+        facingDirection: projectFacing || 'East',
         generateAlternatives: true
       };
 
@@ -167,7 +193,7 @@ export const ExteriorDesignStudioPage = () => {
       }
     } catch (err) {
       console.error('Generate exterior error:', err);
-      setToast('Generation notice: Loaded verified architectural elevation specifications.');
+      setToast('Notice: Switched to verified architectural elevation specifications.');
       setTimeout(() => setToast(null), 4000);
     } finally {
       setGenerating(false);
@@ -209,11 +235,17 @@ export const ExteriorDesignStudioPage = () => {
     }
   };
 
+  // Fallback handler for images to prevent black previews or broken icons
+  const handleImageError = (e, fallbackTitle = 'Exterior Architectural Elevation') => {
+    e.target.onerror = null;
+    e.target.src = '/assets/designs/exterior_modern_2f.jpg';
+  };
+
   // Download Image
   const handleDownload = () => {
     if (!activeDesign?.imageUrl) return;
     const link = document.createElement('a');
-    link.href = activeDesign.imageUrl;
+    link.href = resolveImageUrl(activeDesign.imageUrl);
     link.download = `Exterior_${style.replace(/\s+/g, '_')}_elevation.jpg`;
     document.body.appendChild(link);
     link.click();
@@ -236,22 +268,22 @@ export const ExteriorDesignStudioPage = () => {
         <div>
           <div className="flex items-center gap-2.5 mb-2">
             <span className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">
-              AI Exterior Design Studio
+              Elevation & Facade Studio
             </span>
             <span className="text-xs text-slate-300">•</span>
             <span className="text-xs text-slate-500 font-semibold">
-              Plot: <strong>{currentProject?.plot?.width}' x {currentProject?.plot?.length}' ({currentProject?.plot?.area || 1500} sq.ft)</strong>
+              Project: <strong>{currentProject?.name || 'My Villa'}</strong>
             </span>
             <span className="text-xs text-slate-300">•</span>
-            <span className="text-xs text-slate-500 font-semibold">
-              Height: <strong>{floors} Floor(s)</strong>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              {projectFloors} Floor{projectFloors > 1 ? 's' : ''} (G+{projectFloors - 1})
             </span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
-            AI Exterior Elevation & Facade Studio
+            Exterior Elevation & Facade Architecture
           </h1>
           <p className="text-xs lg:text-sm text-slate-500 mt-1 max-w-2xl">
-            Synthesize front elevations, architectural louvers, stone cladding, boundary gates, and ambient landscape lighting tailored to your plot dimensions.
+            Synthesize exterior elevations strictly synchronized with your project's facing direction, floor architecture, boundary setbacks, and itemized facade BOQ schedule.
           </p>
         </div>
 
@@ -270,231 +302,124 @@ export const ExteriorDesignStudioPage = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-all"
           >
             <Coins className="w-4 h-4 text-emerald-600" />
-            <span>View BOQ Facade Cost</span>
+            <span>View Facade BOQ Impact</span>
           </Link>
         </div>
       </div>
 
-      {/* Main Studio Grid: Configuration on Left (40%), Visualizer on Right (60%) */}
+      {/* Main Studio Grid: Elevation Controls on Left (40%), Visualizer on Right (60%) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* LEFT COLUMN: Exterior Specification Studio */}
+        {/* LEFT COLUMN: Read-only Project Parameters & Style Selection */}
         <div className="lg:col-span-5 space-y-6">
           
-          {/* Style & Elevation Parameters */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+          {/* Elevation Architecture Card (Read-only Project Requirements) */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-blue-600" />
                 <span>Elevation Architecture</span>
               </h3>
-              <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                {currentProject?.plot?.facingDirection || 'East'} Facing
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Project Requirements
               </span>
             </div>
 
-            {/* Architectural Theme Selector */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">Architectural Style Theme</label>
-              <div className="space-y-2">
-                {EXTERIOR_STYLES.map((st) => (
-                  <button
-                    key={st.id}
-                    type="button"
-                    onClick={() => setStyle(st.id)}
-                    className={`w-full p-3 rounded-2xl text-left border transition-all flex items-center justify-between ${
-                      style === st.id
-                        ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 text-blue-900'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                    }`}
+            {/* Warning Banner: Missing Facing Direction */}
+            {!projectFacing && (
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <p className="font-bold text-amber-900">Facing direction not configured in project requirements</p>
+                  <p className="text-[11px] text-amber-700 leading-relaxed">
+                    Defaulting to East Facing for visualization.
+                  </p>
+                  <Link
+                    to={`/project/${id}/setup`}
+                    className="inline-block text-[11px] font-bold text-amber-800 underline hover:text-amber-950 pt-0.5"
                   >
-                    <div>
-                      <p className="text-xs font-bold">{st.label}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">{st.desc}</p>
-                    </div>
-                    {style === st.id && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />}
-                  </button>
-                ))}
+                    Configure Facing in Project Setup →
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Read-Only Parameter Badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                  <Compass className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Plot Facing</span>
+                </div>
+                <p className="text-xs font-black text-slate-800">
+                  {projectFacing ? `${projectFacing} Facing` : 'East (Default)'}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                  <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Floor Architecture</span>
+                </div>
+                <p className="text-xs font-black text-slate-800">
+                  {projectFloors} Floor{projectFloors > 1 ? 's' : ''} (G+{projectFloors - 1})
+                </p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                  <Building2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Plot Footprint</span>
+                </div>
+                <p className="text-xs font-black text-slate-800">
+                  {currentProject?.plot?.width || 30}' × {currentProject?.plot?.length || 50}'
+                </p>
               </div>
             </div>
+          </div>
 
-            {/* Finish Tier */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">Finish Package Tier</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'BASIC', label: 'Basic', desc: 'Plaster & MS' },
-                  { id: 'MEDIUM', label: 'Medium', desc: 'Sandstone & Glass' },
-                  { id: 'RICH', label: 'Luxury', desc: 'Porcelain & Teak' }
-                ].map((tier) => (
-                  <button
-                    key={tier.id}
-                    type="button"
-                    onClick={() => setFinishTier(tier.id)}
-                    className={`p-2.5 rounded-2xl text-center border text-xs font-bold transition-all ${
-                      finishTier === tier.id
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-md'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div>{tier.label}</div>
-                    <div className={`text-[9px] mt-0.5 ${finishTier === tier.id ? 'text-slate-300' : 'text-slate-400'}`}>{tier.desc}</div>
-                  </button>
-                ))}
-              </div>
+          {/* Architectural Style Theme Selector Card */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-blue-600" />
+                <span>Architectural Style Theme</span>
+              </h3>
+              <span className="text-[11px] font-bold text-slate-400">
+                5 Portfolio Styles
+              </span>
             </div>
 
-            {/* Elevation Style */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Front Elevation Form</label>
-              <select
-                value={elevationStyle}
-                onChange={(e) => setElevationStyle(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50"
-              >
-                {ELEVATION_TYPES.map((el, i) => (
-                  <option key={i} value={el}>{el}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Facade Material & Railing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Facade Cladding</label>
-                <select
-                  value={facadeMaterial}
-                  onChange={(e) => setFacadeMaterial(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50"
+            <div className="space-y-2">
+              {EXTERIOR_STYLES.map((st) => (
+                <button
+                  key={st.id}
+                  type="button"
+                  onClick={() => handleStyleSelect(st.id)}
+                  className={`w-full p-3.5 rounded-2xl text-left border transition-all flex items-center justify-between ${
+                    style === st.id
+                      ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 text-blue-900 shadow-xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
                 >
-                  {FACADE_MATERIALS.map((m, i) => (
-                    <option key={i} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Balcony Railing</label>
-                <select
-                  value={balconyRailing}
-                  onChange={(e) => setBalconyRailing(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50"
-                >
-                  {BALCONY_RAILINGS.map((r, i) => (
-                    <option key={i} value={r}>{r}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Boundary Wall & Gate</label>
-                <select
-                  value={boundaryGate}
-                  onChange={(e) => setBoundaryGate(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50"
-                >
-                  {GATES.map((g, i) => (
-                    <option key={i} value={g}>{g}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Number of Floors</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="4"
-                  value={floors}
-                  onChange={(e) => setFloors(Number(e.target.value))}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-semibold"
-                />
-              </div>
-            </div>
-
-            {/* Exterior Palette */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold text-slate-700">Exterior Color Palette</label>
-                <span className="text-[10px] text-slate-400">Tested weather-resistant shades</span>
-              </div>
-
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {CURATED_EXTERIOR_PALETTES.map((p, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setExteriorColors(p.colors)}
-                    className="p-1.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50 shrink-0 flex items-center gap-1.5 transition-all"
-                  >
-                    <div className="flex -space-x-1">
-                      {p.colors.map((c, i) => (
-                        <div key={i} className="w-3.5 h-3.5 rounded-full border border-white shadow-xs" style={{ backgroundColor: c }} />
-                      ))}
-                    </div>
-                    <span className="text-[10px] font-semibold text-slate-600">{p.name}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {exteriorColors.slice(0, 3).map((col, idx) => (
-                  <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-                    <input
-                      type="color"
-                      value={col}
-                      onChange={(e) => {
-                        const copy = [...exteriorColors];
-                        copy[idx] = e.target.value;
-                        setExteriorColors(copy);
-                      }}
-                      className="w-6 h-6 rounded-lg border-0 cursor-pointer p-0 bg-transparent"
-                    />
-                    <span className="text-[10px] font-mono text-slate-700 uppercase">{col}</span>
+                  <div className="min-w-0 pr-3">
+                    <p className="text-xs font-bold text-slate-900">{st.label}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5 leading-relaxed">{st.desc}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Lighting & Landscaping */}
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Exterior Facade Lighting</label>
-                <input
-                  type="text"
-                  value={lighting}
-                  onChange={(e) => setLighting(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Landscaping & Sitout</label>
-                <input
-                  type="text"
-                  value={landscaping}
-                  onChange={(e) => setLandscaping(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Custom Text Instructions</label>
-                <textarea
-                  rows={2}
-                  value={customInstructions}
-                  onChange={(e) => setCustomInstructions(e.target.value)}
-                  placeholder="E.g., Large cantilever balcony on 1st floor, double-height main entry porch, warm up-down lighting..."
-                  className="w-full text-xs p-3 rounded-2xl border border-slate-300"
-                />
-              </div>
+                  {style === st.id ? (
+                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
+                  )}
+                </button>
+              ))}
             </div>
 
             {/* Generate Button */}
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2.5 transition-all disabled:opacity-50"
+              className="w-full mt-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2.5 transition-all disabled:opacity-50"
             >
               <Sparkles className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
               <span>{generating ? 'Synthesizing Elevation...' : 'Generate AI Exterior Elevation'}</span>
@@ -513,11 +438,11 @@ export const ExteriorDesignStudioPage = () => {
             <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
               <div className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700">
                 <span className="text-slate-400 block text-[10px]">Plot Footprint</span>
-                <span className="font-bold text-white">{currentProject?.plot?.width || 30}' x {currentProject?.plot?.length || 50}'</span>
+                <span className="font-bold text-white">{currentProject?.plot?.width || 30}' × {currentProject?.plot?.length || 50}'</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700">
                 <span className="text-slate-400 block text-[10px]">Built-Up Coverage</span>
-                <span className="font-bold text-white">{Math.round((currentProject?.plot?.area || 1500) * 0.75 * floors)} sq.ft</span>
+                <span className="font-bold text-white">{Math.round((currentProject?.plot?.area || 1500) * 0.75 * projectFloors)} sq.ft</span>
               </div>
             </div>
           </div>
@@ -536,6 +461,15 @@ export const ExteriorDesignStudioPage = () => {
                   <span className="text-xs font-bold text-slate-900">
                     {activeDesign ? activeDesign.title : `${style} Villa Front Elevation`}
                   </span>
+                  {activeDesign?.provider === 'curated-architectural-library' || activeDesign?._id?.startsWith('curated_') ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                      🏛️ Curated Architectural Reference
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                      ✨ AI-Generated Concept
+                    </span>
+                  )}
                   {activeDesign?.isFinal && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
@@ -544,7 +478,7 @@ export const ExteriorDesignStudioPage = () => {
                   )}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Engine: {activeDesign?.provider || 'AI Elevation Generator'} ({activeDesign?.model || 'flux'})
+                  Visualizer: {activeDesign?.provider === 'curated-architectural-library' || activeDesign?._id?.startsWith('curated_') ? 'Curated Architectural Portfolio' : (activeDesign?.provider || 'AI Elevation Generator')} ({activeDesign?.model || 'photorealistic-v2'})
                 </p>
               </div>
 
@@ -582,7 +516,7 @@ export const ExteriorDesignStudioPage = () => {
                       title="Compare Alternatives"
                     >
                       <Columns className="w-4 h-4" />
-                      <span>Compare (3)</span>
+                      <span>Compare ({activeDesign.alternatives.length + 1})</span>
                     </button>
                   )}
 
@@ -615,8 +549,9 @@ export const ExteriorDesignStudioPage = () => {
                 </div>
               ) : activeDesign?.imageUrl ? (
                 <img
-                  src={activeDesign.imageUrl}
+                  src={resolveImageUrl(activeDesign.imageUrl)}
                   alt={activeDesign.title || 'Generated Elevation'}
+                  onError={(e) => handleImageError(e, activeDesign.title || 'Exterior Facade Elevation')}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 />
               ) : (
@@ -624,7 +559,7 @@ export const ExteriorDesignStudioPage = () => {
                   <Building2 className="w-12 h-12 mx-auto text-slate-700" />
                   <p className="text-xs font-semibold">No exterior elevation concept generated yet.</p>
                   <p className="text-[11px] text-slate-600 max-w-sm mx-auto">
-                    Select your architectural parameters on the left and click "Generate AI Exterior Elevation" to synthesize custom conceptual designs.
+                    Select your architectural style on the left to preview verified elevation concepts or click Generate for AI synthesis.
                   </p>
                 </div>
               )}
@@ -650,19 +585,28 @@ export const ExteriorDesignStudioPage = () => {
                     onClick={() => {}}
                     className="relative rounded-xl overflow-hidden border-2 border-blue-500 cursor-pointer aspect-[4/3]"
                   >
-                    <img src={activeDesign.imageUrl} alt="Main" className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(activeDesign.imageUrl)}
+                      alt="Main"
+                      onError={(e) => handleImageError(e, 'Active Elevation')}
+                      className="w-full h-full object-cover"
+                    />
                     <span className="absolute bottom-1 right-1 text-[9px] font-bold bg-blue-600 text-white px-1.5 rounded">Active</span>
                   </div>
                   {activeDesign.alternatives.map((alt, i) => (
                     <div
                       key={i}
                       onClick={() => {
-                        const temp = activeDesign.imageUrl;
                         setActiveDesign({ ...activeDesign, imageUrl: alt.imageUrl });
                       }}
                       className="relative rounded-xl overflow-hidden border border-slate-200 hover:border-purple-500 cursor-pointer aspect-[4/3] transition-all"
                     >
-                      <img src={alt.imageUrl} alt={`Alt ${i + 1}`} className="w-full h-full object-cover" />
+                      <img
+                        src={resolveImageUrl(alt.imageUrl)}
+                        alt={`Alt ${i + 1}`}
+                        onError={(e) => handleImageError(e, `Alternative #${i + 1}`)}
+                        className="w-full h-full object-cover"
+                      />
                       <span className="absolute bottom-1 right-1 text-[9px] font-bold bg-slate-900/80 text-white px-1.5 rounded">Alt #{i + 1}</span>
                     </div>
                   ))}
@@ -678,10 +622,10 @@ export const ExteriorDesignStudioPage = () => {
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <Coins className="w-4 h-4 text-emerald-600" />
-                  <span>Itemized Exterior Facade & Site Quantities</span>
+                  <span>Itemized Exterior Facade Specifications & Cost</span>
                 </h3>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Synchronized with BOQ Items BOQ-21 (Facade), BOQ-22 (Railings), BOQ-23 (Gate) & BOQ-24 (Landscape).
+                  Calculated for {projectFloors}-Floor {style} elevation & Warangal regional SoR 2026.
                 </p>
               </div>
 
@@ -702,19 +646,13 @@ export const ExteriorDesignStudioPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {(activeDesign?.costImpact?.specifications || [
-                    { name: "Exterior Sandstone Cladding", spec: facadeMaterial, qty: 350, unit: "sq.ft", totalCost: 63000 },
-                    { name: "Balcony Safety Railing", spec: balconyRailing, qty: 30, unit: "rft", totalCost: 36000 },
-                    { name: "CNC Main Entrance Gate", spec: boundaryGate, qty: 1, unit: "lump_sum", totalCost: 65000 },
-                    { name: "Architectural Lighting & Spots", spec: lighting, qty: 8, unit: "nos", totalCost: 22400 },
-                    { name: "Perimeter Landscaping & Sitout", spec: landscaping, qty: 1, unit: "lump_sum", totalCost: 39600 }
-                  ]).map((m, idx) => (
+                  {(activeDesign?.costImpact?.specifications || []).map((m, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-2 px-3 font-semibold text-slate-900">{m.name}</td>
                       <td className="py-2 px-3 text-slate-600">{m.spec}</td>
                       <td className="py-2 px-3 font-mono text-slate-700">{m.qty} {m.unit}</td>
                       <td className="py-2 px-3 font-mono font-bold text-blue-600 text-right">
-                        ₹{Number(m.totalCost || m.total).toLocaleString('en-IN')}
+                        ₹{Number(m.totalCost || m.total || 0).toLocaleString('en-IN')}
                       </td>
                     </tr>
                   ))}
@@ -723,9 +661,9 @@ export const ExteriorDesignStudioPage = () => {
             </div>
 
             <div className="p-3 bg-slate-50 rounded-2xl text-[11px] text-slate-500 flex items-center justify-between">
-              <span>* Exterior finishes automatically update project schedule of rates and cost estimation.</span>
+              <span>* Exterior finishes automatically synchronize with project schedule of rates and cost estimation.</span>
               <Link to={`/project/${id}/boq`} className="text-blue-600 font-bold hover:underline">
-                Open Full 28-Category BOQ →
+                Open Full BOQ Schedule →
               </Link>
             </div>
           </div>
@@ -741,7 +679,7 @@ export const ExteriorDesignStudioPage = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-lg font-black text-slate-900">Compare Elevation Architectural Variations</h3>
-                <p className="text-xs text-slate-500">Side-by-side comparison for {style} Villa ({floors} Floors)</p>
+                <p className="text-xs text-slate-500">Side-by-side comparison for {style} Villa ({projectFloors} Floor{projectFloors > 1 ? 's' : ''})</p>
               </div>
               <button
                 onClick={() => setCompareModalOpen(false)}
@@ -756,7 +694,12 @@ export const ExteriorDesignStudioPage = () => {
               <div className="bg-slate-50 rounded-2xl p-4 border-2 border-blue-500 space-y-3">
                 <span className="text-[10px] font-extrabold uppercase bg-blue-600 text-white px-2.5 py-0.5 rounded-full">Candidate 1 (Active)</span>
                 <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-900">
-                  <img src={activeDesign.imageUrl} alt="Candidate 1" className="w-full h-full object-cover" />
+                  <img
+                    src={resolveImageUrl(activeDesign.imageUrl)}
+                    alt="Candidate 1"
+                    onError={(e) => handleImageError(e, 'Candidate 1')}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <p className="text-xs font-semibold text-slate-800">Primary Elevation Composition</p>
                 <button
@@ -772,7 +715,12 @@ export const ExteriorDesignStudioPage = () => {
                 <div key={i} className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
                   <span className="text-[10px] font-extrabold uppercase bg-purple-600 text-white px-2.5 py-0.5 rounded-full">Candidate {i + 2}</span>
                   <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-900">
-                    <img src={alt.imageUrl} alt={`Candidate ${i + 2}`} className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(alt.imageUrl)}
+                      alt={`Candidate ${i + 2}`}
+                      onError={(e) => handleImageError(e, `Candidate ${i + 2}`)}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <p className="text-xs font-semibold text-slate-800">Alternative Architectural Angle #{i + 1}</p>
                   <button
@@ -824,7 +772,12 @@ export const ExteriorDesignStudioPage = () => {
                   }`}
                 >
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0">
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(item.imageUrl)}
+                      alt={item.title}
+                      onError={(e) => handleImageError(e, item.title || 'Saved Elevation')}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">

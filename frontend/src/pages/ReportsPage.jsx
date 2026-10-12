@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext';
 import { reportApi } from '../services/api';
@@ -9,19 +9,98 @@ import {
   CheckCircle2,
   ShieldCheck,
   Building2,
-  Download
+  Download,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 
 export const ReportsPage = () => {
   const { id } = useParams();
   const { currentProject } = useProject();
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [downloadingExcel, setDownloadingExcel] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
 
-  const handleDownloadPdf = () => {
-    window.open(reportApi.getPdfUrl(id), '_blank');
+  const handleDownloadPdf = async () => {
+    try {
+      setDownloadingPdf(true);
+      setError(null);
+      setSuccessMsg(null);
+
+      const res = await reportApi.downloadPdf(id);
+
+      // Verify that response is a valid blob
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeName = (currentProject?.name || 'House_Project').replace(/[^a-zA-Z0-9_-]/g, '_');
+      link.download = `${safeName}_Portfolio.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      setSuccessMsg('Architectural & Financial PDF Portfolio downloaded successfully!');
+      setTimeout(() => setSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error('PDF download error:', err);
+      let errMsg = 'Failed to generate PDF report. Please verify project access permissions.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json.message) errMsg = json.message;
+        } catch (e) {}
+      } else if (err.response?.data?.message) {
+        errMsg = err.response.data.message;
+      }
+      setError(errMsg);
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
-  const handleDownloadExcel = () => {
-    window.open(reportApi.getExcelUrl(id), '_blank');
+  const handleDownloadExcel = async () => {
+    try {
+      setDownloadingExcel(true);
+      setError(null);
+      setSuccessMsg(null);
+
+      const res = await reportApi.downloadExcel(id);
+
+      const blob = new Blob([res.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeName = (currentProject?.name || 'House_Project').replace(/[^a-zA-Z0-9_-]/g, '_');
+      link.download = `${safeName}_Construction_Workbook.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      setSuccessMsg('Comprehensive Excel Financial Workbook (.xlsx) downloaded successfully!');
+      setTimeout(() => setSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error('Excel download error:', err);
+      let errMsg = 'Failed to generate Excel workbook. Please verify project access permissions.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json.message) errMsg = json.message;
+        } catch (e) {}
+      } else if (err.response?.data?.message) {
+        errMsg = err.response.data.message;
+      }
+      setError(errMsg);
+    } finally {
+      setDownloadingExcel(false);
+    }
   };
 
   return (
@@ -34,13 +113,28 @@ export const ReportsPage = () => {
             DOCUMENT EXPORT ENGINE
           </span>
           <span className="text-xs text-slate-400">•</span>
-          <span className="text-xs text-slate-500 font-semibold">{currentProject?.name}</span>
+          <span className="text-xs text-slate-500 font-semibold">{currentProject?.name || 'Project'}</span>
         </div>
         <h1 className="text-xl font-bold text-slate-900">Project Reports & Export Center</h1>
         <p className="text-xs text-slate-500 mt-0.5">
           Generate comprehensive architectural dossiers and itemized financial spreadsheets formatted for municipal submissions, contractors, and home loans.
         </p>
       </div>
+
+      {/* Notifications */}
+      {error && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {successMsg && (
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <span>{successMsg}</span>
+        </div>
+      )}
 
       {/* 2 Main Exporter Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -54,7 +148,7 @@ export const ReportsPage = () => {
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">Architectural & Financial PDF Portfolio</h3>
-                <p className="text-xs text-slate-500">Multi-page printable project dossier</p>
+                <p className="text-xs text-slate-500">Multi-page printable project dossier (.pdf)</p>
               </div>
             </div>
 
@@ -74,10 +168,20 @@ export const ReportsPage = () => {
 
           <button
             onClick={handleDownloadPdf}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition-all hover:scale-[1.01]"
+            disabled={downloadingPdf}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-60 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition-all hover:scale-[1.01]"
           >
-            <Download className="w-4 h-4" />
-            <span>Generate & Download PDF Report</span>
+            {downloadingPdf ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Generating & Encapsulating PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>Generate & Download PDF Report</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -108,10 +212,20 @@ export const ReportsPage = () => {
 
           <button
             onClick={handleDownloadExcel}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01]"
+            disabled={downloadingExcel}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01]"
           >
-            <Download className="w-4 h-4" />
-            <span>Generate & Download Excel Workbook</span>
+            {downloadingExcel ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Compiling Financial Workbook...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>Generate & Download Excel Workbook</span>
+              </>
+            )}
           </button>
         </div>
 

@@ -45,6 +45,21 @@ exports.updateStage = async (req, res, next) => {
 
     if (!stage) return res.status(404).json({ success: false, message: 'Stage not found' });
 
+    // Enforce prerequisite dependencies when updating status to Completed
+    if (status === 'Completed' && !stage.exceptionOverride?.isOverridden) {
+      let allStages = getMongoStatus() ? 
+        await ConstructionStage.find({ projectId: stage.projectId }).sort({ stageOrder: 1 }) : 
+        await fallbackDb.constructionStages.find({ projectId: stage.projectId });
+      const eligibility = evaluateStageEligibility(stage, allStages);
+      if (!eligibility.eligible) {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot complete stage '${stage.name}'. Prerequisite stage(s) incomplete: ${eligibility.blockingStages.join(', ')}`,
+          blockingStages: eligibility.blockingStages
+        });
+      }
+    }
+
     const previousStatus = stage.status;
     const updateData = {
       status: status || stage.status,

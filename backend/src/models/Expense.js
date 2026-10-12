@@ -36,6 +36,18 @@ const expenseSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  subtotal: {
+    type: Number,
+    default: 0,
+  },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  additionalCharges: {
+    type: Number,
+    default: 0,
+  },
   totalAmount: {
     type: Number,
     required: true,

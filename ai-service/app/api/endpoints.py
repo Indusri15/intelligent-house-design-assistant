@@ -47,7 +47,8 @@ async def analyze_site_image_endpoint(file: UploadFile = File(...)) -> Dict[str,
     try:
         contents = await file.read()
         analysis = SiteBoundaryDetector.analyze_site_image(contents)
-        return {"success": True, "data": analysis}
+        is_valid = analysis.get("isValidImage", False)
+        return {"success": is_valid, "data": analysis, "message": analysis.get("notes", [""])[0] if not is_valid else "Analysis complete"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Site image analysis failed: {str(e)}")
 
@@ -56,7 +57,13 @@ async def segment_floorplan_endpoint(file: UploadFile = File(...)) -> Dict[str, 
     try:
         contents = await file.read()
         seg_result = segmentor.segment_image(contents)
-        return {"success": True, "data": seg_result}
+        is_success = seg_result.get("status") in ("SUCCESS", "DEMO_MODE")
+        return {
+            "success": is_success,
+            "data": seg_result,
+            "status": seg_result.get("status", "DEMO_MODE"),
+            "message": seg_result.get("message", "Floorplan segmentation complete")
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Floorplan segmentation failed: {str(e)}")
 

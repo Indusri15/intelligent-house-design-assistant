@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext';
-import { designApi } from '../services/api';
+import { designApi, resolveImageUrl } from '../services/api';
+import curatedLibrary from '../data/curatedDesignLibrary.json';
 import {
   Palette,
   Sparkles,
@@ -32,10 +33,7 @@ const ROOM_TYPES = [
   { id: 'bedroom', label: 'Guest / Kids Bedroom', icon: '🚪', defaultArea: 150 },
   { id: 'kitchen', label: 'Modular Kitchen', icon: '🍳', defaultArea: 120 },
   { id: 'dining_room', label: 'Dining Room', icon: '🍽️', defaultArea: 140 },
-  { id: 'bathroom', label: 'Luxury Bathroom', icon: '🚿', defaultArea: 60 },
-  { id: 'pooja_room', label: 'Pooja Mandir', icon: '🪔', defaultArea: 50 },
-  { id: 'staircase', label: 'Staircase Lobby', icon: '🪜', defaultArea: 90 },
-  { id: 'balcony', label: 'Balcony / Sitout', icon: '🪴', defaultArea: 80 }
+  { id: 'bathroom', label: 'Luxury Bathroom', icon: '🚿', defaultArea: 60 }
 ];
 
 const DESIGN_STYLES = [
@@ -46,23 +44,47 @@ const DESIGN_STYLES = [
   { id: 'Luxury', label: 'Luxury / Italian', desc: 'Statuario marble, fluted oak & gold accents' }
 ];
 
-const CURATED_PALETTES = [
-  { name: 'Warm Architectural', colors: ['#F8FAFC', '#334155', '#D97706', '#E2E8F0'] },
-  { name: 'Modern Charcoal Slate', colors: ['#0F172A', '#1E293B', '#38BDF8', '#F1F5F9'] },
-  { name: 'Heritage Sandalwood', colors: ['#FFFBEB', '#B45309', '#78350F', '#15803D'] },
-  { name: 'Luxury Obsidian Gold', colors: ['#090A0F', '#1E293B', '#F59E0B', '#E2E8F0'] },
-  { name: 'Zen Earth Olive', colors: ['#F7FEE7', '#365314', '#713F12', '#ECFCCB'] }
-];
+export const getCuratedInteriorDesign = (roomId, styleId) => {
+  const roomKey = roomId || 'living_room';
+  const roomObj = curatedLibrary.interior?.[roomKey] || curatedLibrary.interior?.['living_room'];
+  let normStyle = styleId || 'Contemporary';
+  if (normStyle.includes('Luxury')) normStyle = 'Luxury';
+  const entry = roomObj?.[normStyle] || roomObj?.['Contemporary'] || roomObj?.[Object.keys(roomObj || {})[0]] || {
+    title: 'Architectural Interior Concept',
+    description: 'Bespoke interior architectural concept.',
+    image: '/assets/designs/interior_living_white.jpg',
+    alternatives: [],
+    materials: [],
+    estimatedCost: 120000
+  };
+
+  return {
+    _id: `curated_${roomKey}_${normStyle}`,
+    roomType: roomKey,
+    style: normStyle,
+    title: entry.title,
+    description: entry.description,
+    imageUrl: entry.image,
+    alternatives: entry.alternatives || [],
+    provider: 'curated-architectural-library',
+    model: 'curated-architectural-portfolio',
+    isFavorite: false,
+    isFinal: false,
+    costImpact: {
+      estimatedCost: entry.estimatedCost || 120000,
+      specifications: entry.materials || []
+    }
+  };
+};
 
 export const InteriorDesignStudioPage = () => {
   const { id } = useParams();
-  const { currentProject } = useProject();
+  const { currentProject, selectProjectById } = useProject();
 
   // Form Configuration State
   const [selectedRoom, setSelectedRoom] = useState('living_room');
   const [style, setStyle] = useState('Contemporary');
   const [budgetTier, setBudgetTier] = useState('MEDIUM');
-  const [wallColors, setWallColors] = useState(['#F8FAFC', '#334155', '#D97706']);
   const [flooring, setFlooring] = useState('Glazed Vitrified Tiles (4x2 ft)');
   const [ceiling, setCeiling] = useState('Saint-Gobain Gypsum False Ceiling with LED Cove');
   const [lighting, setLighting] = useState('Warm White Recessed Downlights & Magnetic Track');
@@ -72,7 +94,7 @@ export const InteriorDesignStudioPage = () => {
   const [customInstructions, setCustomInstructions] = useState('');
 
   // Generation & Gallery State
-  const [activeDesign, setActiveDesign] = useState(null);
+  const [activeDesign, setActiveDesign] = useState(() => getCuratedInteriorDesign('living_room', 'Contemporary'));
   const [generating, setGenerating] = useState(false);
   const [genStep, setGenStep] = useState(0);
   const [history, setHistory] = useState([]);
@@ -90,13 +112,23 @@ export const InteriorDesignStudioPage = () => {
   // Sync project default style & budget on load
   useEffect(() => {
     if (currentProject) {
+      let activeSt = style;
       if (currentProject.preferences?.style) {
         const matched = DESIGN_STYLES.find(s => s.id.toLowerCase() === currentProject.preferences.style.toLowerCase());
-        if (matched) setStyle(matched.id);
+        if (matched) {
+          setStyle(matched.id);
+          activeSt = matched.id;
+        }
       }
       if (currentProject.selectedPackage) {
         setBudgetTier(currentProject.selectedPackage);
       }
+      setActiveDesign(prev => {
+        if (!prev || prev._id?.startsWith('curated_')) {
+          return getCuratedInteriorDesign(selectedRoom, activeSt);
+        }
+        return prev;
+      });
     }
   }, [currentProject]);
 
@@ -105,10 +137,13 @@ export const InteriorDesignStudioPage = () => {
     try {
       const res = await designApi.getHistory(id, 'interior');
       if (res.data.success) {
-        setHistory(res.data.designs || []);
-        if (res.data.designs?.length > 0 && !activeDesign) {
-          const roomMatch = res.data.designs.find(d => d.roomType === selectedRoom);
-          setActiveDesign(roomMatch || res.data.designs[0]);
+        const designs = res.data.designs || [];
+        setHistory(designs);
+        const match = designs.find(d => d.roomType === selectedRoom && d.style === style) || designs.find(d => d.roomType === selectedRoom);
+        if (match) {
+          setActiveDesign(match);
+        } else {
+          setActiveDesign(prev => prev?._id?.startsWith('curated_') ? prev : getCuratedInteriorDesign(selectedRoom, style));
         }
       }
     } catch (err) {
@@ -127,6 +162,9 @@ export const InteriorDesignStudioPage = () => {
 
   useEffect(() => {
     if (id) {
+      if (selectProjectById && (!currentProject || (currentProject._id !== id && currentProject.id !== id))) {
+        selectProjectById(id);
+      }
       fetchHistory();
       fetchProviders();
     }
@@ -142,7 +180,7 @@ export const InteriorDesignStudioPage = () => {
     });
   };
 
-  // Switch Room Type & Set Defaults
+  // Switch Room Type & Set Defaults with Instant Visual Update
   const handleRoomSelect = (roomId) => {
     setSelectedRoom(roomId);
     const roomMeta = ROOM_TYPES.find(r => r.id === roomId);
@@ -156,9 +194,16 @@ export const InteriorDesignStudioPage = () => {
       });
     }
 
-    // Switch active design in preview if found in history
-    const existing = history.find(d => d.roomType === roomId);
-    if (existing) setActiveDesign(existing);
+    // Switch active design instantly: matching history or curated design for this room & style
+    const existing = history.find(d => d.roomType === roomId && d.style === style) || history.find(d => d.roomType === roomId);
+    setActiveDesign(existing || getCuratedInteriorDesign(roomId, style));
+  };
+
+  // Switch Style with Instant Visual Update
+  const handleStyleSelect = (styleId) => {
+    setStyle(styleId);
+    const existing = history.find(d => d.roomType === selectedRoom && d.style === styleId);
+    setActiveDesign(existing || getCuratedInteriorDesign(selectedRoom, styleId));
   };
 
   // ADE20K Scene Image Upload & Analysis
@@ -190,14 +235,6 @@ export const InteriorDesignStudioPage = () => {
     }
   };
 
-  const applyScenePalette = (palette) => {
-    if (palette && palette.length > 0) {
-      setWallColors(palette.slice(0, 4));
-      setToast('Applied ADE20K extracted color palette to studio!');
-      setTimeout(() => setToast(null), 3000);
-    }
-  };
-
   // Trigger AI Interior Generation
   const handleGenerate = async () => {
     try {
@@ -211,7 +248,6 @@ export const InteriorDesignStudioPage = () => {
         roomType: selectedRoom,
         style,
         budgetTier,
-        wallColors,
         flooring,
         ceiling,
         lighting,
@@ -277,11 +313,17 @@ export const InteriorDesignStudioPage = () => {
     }
   };
 
+  // Fallback handler for images to prevent black previews or broken icons
+  const handleImageError = (e, fallbackTitle = 'Interior Architectural Concept') => {
+    e.target.onerror = null;
+    e.target.src = '/assets/designs/interior_living_white.jpg';
+  };
+
   // Download Image
   const handleDownload = () => {
     if (!activeDesign?.imageUrl) return;
     const link = document.createElement('a');
-    link.href = activeDesign.imageUrl;
+    link.href = resolveImageUrl(activeDesign.imageUrl);
     link.download = `${selectedRoom}_${style.replace(/\s+/g, '_')}_design.jpg`;
     document.body.appendChild(link);
     link.click();
@@ -387,7 +429,7 @@ export const InteriorDesignStudioPage = () => {
                   <button
                     key={st.id}
                     type="button"
-                    onClick={() => setStyle(st.id)}
+                    onClick={() => handleStyleSelect(st.id)}
                     className={`p-3 rounded-2xl text-left border transition-all ${
                       style === st.id
                         ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 text-blue-900'
@@ -423,52 +465,6 @@ export const InteriorDesignStudioPage = () => {
                     <div>{tier.label}</div>
                     <div className={`text-[9px] mt-0.5 ${budgetTier === tier.id ? 'text-slate-300' : 'text-slate-400'}`}>{tier.desc}</div>
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Wall Colors & Curated Palettes */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold text-slate-700">Wall Colors & Mood Palette</label>
-                <span className="text-[10px] text-slate-400">Click to apply palette</span>
-              </div>
-
-              {/* Preset Palettes */}
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {CURATED_PALETTES.map((p, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setWallColors(p.colors)}
-                    className="p-1.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50 shrink-0 flex items-center gap-1.5 transition-all"
-                  >
-                    <div className="flex -space-x-1">
-                      {p.colors.map((c, i) => (
-                        <div key={i} className="w-3.5 h-3.5 rounded-full border border-white shadow-xs" style={{ backgroundColor: c }} />
-                      ))}
-                    </div>
-                    <span className="text-[10px] font-semibold text-slate-600">{p.name.split(' ')[0]}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Active Color Hex Pickers */}
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {wallColors.slice(0, 3).map((col, idx) => (
-                  <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-                    <input
-                      type="color"
-                      value={col}
-                      onChange={(e) => {
-                        const copy = [...wallColors];
-                        copy[idx] = e.target.value;
-                        setWallColors(copy);
-                      }}
-                      className="w-6 h-6 rounded-lg border-0 cursor-pointer p-0 bg-transparent"
-                    />
-                    <span className="text-[10px] font-mono text-slate-700 uppercase">{col}</span>
-                  </div>
                 ))}
               </div>
             </div>
@@ -634,14 +630,7 @@ export const InteriorDesignStudioPage = () => {
                 {sceneAnalysis.extractedPalette && (
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-bold text-slate-500">Extracted Dominant Palette</span>
-                      <button
-                        type="button"
-                        onClick={() => applyScenePalette(sceneAnalysis.extractedPalette)}
-                        className="text-[10px] font-bold text-blue-600 hover:underline"
-                      >
-                        Apply to Form
-                      </button>
+                      <span className="text-[10px] font-bold text-slate-500">Extracted Room Color Palette</span>
                     </div>
                     <div className="flex gap-1.5">
                       {sceneAnalysis.extractedPalette.map((col, i) => (
@@ -684,6 +673,15 @@ export const InteriorDesignStudioPage = () => {
                   <span className="text-xs font-bold text-slate-900">
                     {activeDesign ? activeDesign.title : `${style} ${selectedRoom.replace(/_/g, ' ')}`}
                   </span>
+                  {activeDesign?.provider === 'curated-architectural-library' || activeDesign?._id?.startsWith('curated_') ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                      🏛️ Curated Architectural Reference
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                      ✨ AI-Generated Concept
+                    </span>
+                  )}
                   {activeDesign?.isFinal && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
@@ -692,7 +690,7 @@ export const InteriorDesignStudioPage = () => {
                   )}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Engine: {activeDesign?.provider || 'AI Generative Pipeline'} ({activeDesign?.model || 'flux'})
+                  Visualizer: {activeDesign?.provider === 'curated-architectural-library' || activeDesign?._id?.startsWith('curated_') ? 'Curated Architectural Portfolio' : (activeDesign?.provider || 'AI Generative Pipeline')} ({activeDesign?.model || 'photorealistic-v2'})
                 </p>
               </div>
 
@@ -763,8 +761,9 @@ export const InteriorDesignStudioPage = () => {
                 </div>
               ) : activeDesign?.imageUrl ? (
                 <img
-                  src={activeDesign.imageUrl}
+                  src={resolveImageUrl(activeDesign.imageUrl)}
                   alt={activeDesign.title || 'Generated Interior'}
+                  onError={(e) => handleImageError(e, activeDesign.title || 'Interior Architectural Concept')}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 />
               ) : (
@@ -798,19 +797,28 @@ export const InteriorDesignStudioPage = () => {
                     onClick={() => {}}
                     className="relative rounded-xl overflow-hidden border-2 border-blue-500 cursor-pointer aspect-[4/3]"
                   >
-                    <img src={activeDesign.imageUrl} alt="Main" className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(activeDesign.imageUrl)}
+                      alt="Main"
+                      onError={(e) => handleImageError(e, 'Active Concept')}
+                      className="w-full h-full object-cover"
+                    />
                     <span className="absolute bottom-1 right-1 text-[9px] font-bold bg-blue-600 text-white px-1.5 rounded">Active</span>
                   </div>
                   {activeDesign.alternatives.map((alt, i) => (
                     <div
                       key={i}
                       onClick={() => {
-                        const temp = activeDesign.imageUrl;
                         setActiveDesign({ ...activeDesign, imageUrl: alt.imageUrl });
                       }}
                       className="relative rounded-xl overflow-hidden border border-slate-200 hover:border-purple-500 cursor-pointer aspect-[4/3] transition-all"
                     >
-                      <img src={alt.imageUrl} alt={`Alt ${i + 1}`} className="w-full h-full object-cover" />
+                      <img
+                        src={resolveImageUrl(alt.imageUrl)}
+                        alt={`Alt ${i + 1}`}
+                        onError={(e) => handleImageError(e, `Alternative #${i + 1}`)}
+                        className="w-full h-full object-cover"
+                      />
                       <span className="absolute bottom-1 right-1 text-[9px] font-bold bg-slate-900/80 text-white px-1.5 rounded">Alt #{i + 1}</span>
                     </div>
                   ))}
@@ -904,7 +912,12 @@ export const InteriorDesignStudioPage = () => {
               <div className="bg-slate-50 rounded-2xl p-4 border-2 border-blue-500 space-y-3">
                 <span className="text-[10px] font-extrabold uppercase bg-blue-600 text-white px-2.5 py-0.5 rounded-full">Candidate 1 (Active)</span>
                 <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-900">
-                  <img src={activeDesign.imageUrl} alt="Candidate 1" className="w-full h-full object-cover" />
+                  <img
+                    src={resolveImageUrl(activeDesign.imageUrl)}
+                    alt="Candidate 1"
+                    onError={(e) => handleImageError(e, 'Candidate 1')}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <p className="text-xs font-semibold text-slate-800">Primary Composition</p>
                 <button
@@ -920,7 +933,12 @@ export const InteriorDesignStudioPage = () => {
                 <div key={i} className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
                   <span className="text-[10px] font-extrabold uppercase bg-purple-600 text-white px-2.5 py-0.5 rounded-full">Candidate {i + 2}</span>
                   <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-900">
-                    <img src={alt.imageUrl} alt={`Candidate ${i + 2}`} className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(alt.imageUrl)}
+                      alt={`Candidate ${i + 2}`}
+                      onError={(e) => handleImageError(e, `Candidate ${i + 2}`)}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <p className="text-xs font-semibold text-slate-800">Alternative Perspective #{i + 1}</p>
                   <button
@@ -973,7 +991,12 @@ export const InteriorDesignStudioPage = () => {
                   }`}
                 >
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0">
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(item.imageUrl)}
+                      alt={item.title}
+                      onError={(e) => handleImageError(e, item.title || 'Saved Concept')}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">

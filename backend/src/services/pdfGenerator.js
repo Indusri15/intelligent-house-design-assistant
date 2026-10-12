@@ -24,7 +24,7 @@ async function generateProjectPdf(data, res) {
   doc.fillColor('#ffffff').fontSize(18).font('Helvetica-Bold')
      .text('INTELLIGENT HOUSE DESIGN & CONSTRUCTION ASSISTANT', 55, 52);
   doc.fontSize(9).font('Helvetica')
-     .text('B.Tech IT Major Project | AI/ML-Powered Architectural Planning & Estimation Engine', 55, 75);
+     .text('Architectural Planning, Structural BOQ & Construction Estimation Portfolio', 55, 75);
 
   doc.moveDown(3);
 
@@ -42,7 +42,7 @@ async function generateProjectPdf(data, res) {
       ['Total Built-Up Area', `${boq.totalBuiltUpAreaSqFt || 1500} sq.ft`, 'User Budget', `₹ ${Number(project.budget || 0).toLocaleString('en-IN')}`],
       ['Architectural Style', project.preferences?.style || 'Contemporary', 'Selected Package', `${boq.selectedPackage || 'MEDIUM'} Tier`],
       ['Total Estimated Cost', `₹ ${Number(boq.totalEstimatedCost || 0).toLocaleString('en-IN')}`, 'Cost per Sq.Ft', `₹ ${boq.costPerSqFt || 0} / sq.ft`],
-      ['Budget Variance', `₹ ${Number(boq.budgetDifference || 0).toLocaleString('en-IN')} (${(boq.budgetDifference >= 0) ? 'Savings' : 'Shortfall'})`, 'Vastu Rating', `${vastu.grade} (${vastu.overallScore}/100)`]
+      ['Budget Variance', `₹ ${Number(boq.budgetDifference || 0).toLocaleString('en-IN')} (${(boq.budgetDifference >= 0) ? 'Within Budget' : 'Budget Shortfall'})`, 'Vastu Rating', `${vastu.grade} (${vastu.overallScore}/100)`]
     ]
   };
 
@@ -79,20 +79,24 @@ async function generateProjectPdf(data, res) {
 
   doc.addPage();
 
-  // 4. 3-Tier Package Comparison
-  doc.fillColor('#0f172a').fontSize(14).font('Helvetica-Bold').text('3-Tier Package Comparison Matrix', 40, 40);
+  // 4. Financial Assessment & Cost Summary
+  doc.fillColor('#0f172a').fontSize(14).font('Helvetica-Bold').text('Financial Assessment & Cost Summary', 40, 40);
   doc.moveDown(0.5);
 
-  const pkgTable = {
-    headers: ['Package Tier', 'Rate / Sq.Ft', 'Estimated Total', 'Difference from Budget', 'Key Specifications'],
+  const financialTable = {
+    headers: ['Financial Metric', 'Amount (INR)', 'Allocation %', 'Engineering Notes'],
     rows: [
-      ['BASIC', `₹ ${boq.packages?.basic?.costPerSqFt} / sq.ft`, `₹ ${Number(boq.packages?.basic?.totalCost).toLocaleString('en-IN')}`, `₹ ${Number(boq.packages?.basic?.diffFromBudget).toLocaleString('en-IN')}`, 'Standard vitrified 2x2, clay bricks, flush doors, tractor emulsion'],
-      ['MEDIUM (Selected)', `₹ ${boq.packages?.medium?.costPerSqFt} / sq.ft`, `₹ ${Number(boq.packages?.medium?.totalCost).toLocaleString('en-IN')}`, `₹ ${Number(boq.packages?.medium?.diffFromBudget).toLocaleString('en-IN')}`, 'Glazed 4x2 GVT tiles, UPVC windows, Teak entrance, false ceiling'],
-      ['RICH / LUXURY', `₹ ${boq.packages?.rich?.costPerSqFt} / sq.ft`, `₹ ${Number(boq.packages?.rich?.totalCost).toLocaleString('en-IN')}`, `₹ ${Number(boq.packages?.rich?.diffFromBudget).toLocaleString('en-IN')}`, 'Italian marble, smart automation, AAC blocks, PU polish, walk-in wardrobes']
+      ['Structural Materials', `₹ ${Number(boq.summary?.materialCost || 0).toLocaleString('en-IN')}`, `${Math.round(((boq.summary?.materialCost || 0) / (boq.totalEstimatedCost || 1)) * 100)}%`, 'Cement, TMT Steel, Sand, Coarse Aggregate, AAC/Brickwork'],
+      ['Labour & Masonry', `₹ ${Number(boq.summary?.labourCost || 0).toLocaleString('en-IN')}`, `${Math.round(((boq.summary?.labourCost || 0) / (boq.totalEstimatedCost || 1)) * 100)}%`, 'Excavation, bar bending, RCC casting, brickwork & plastering'],
+      ['Contractor Supervision (10%)', `₹ ${Number(boq.summary?.contractorCost || 0).toLocaleString('en-IN')}`, '10%', 'On-site engineering oversight and project coordination'],
+      ['Interior & Finishing Carpentry', `₹ ${Number(boq.summary?.interiorCost || 0).toLocaleString('en-IN')}`, `${Math.round(((boq.summary?.interiorCost || 0) / (boq.totalEstimatedCost || 1)) * 100)}%`, 'Modular kitchen, bedroom wardrobes and false ceiling'],
+      ['Architectural & Structural Fees', `₹ ${Number(boq.summary?.otherExpenses || 0).toLocaleString('en-IN')}`, '3%', 'Sanction drawings, structural detailing & MEP consultancy'],
+      ['Contingency Reserve (5%)', `₹ ${Number(boq.summary?.contingency || 0).toLocaleString('en-IN')}`, '5%', 'Unforeseen ground conditions & minor market price variances'],
+      ['TOTAL ESTIMATED COST', `₹ ${Number(boq.totalEstimatedCost || 0).toLocaleString('en-IN')}`, '100%', `₹ ${boq.costPerSqFt} / sq.ft across ${boq.totalBuiltUpAreaSqFt} sq.ft`]
     ]
   };
 
-  await doc.table(pkgTable, {
+  await doc.table(financialTable, {
     prepareHeader: () => doc.font('Helvetica-Bold').fontSize(8),
     prepareRow: () => doc.font('Helvetica').fontSize(8)
   });
@@ -120,10 +124,15 @@ async function generateProjectPdf(data, res) {
     prepareRow: () => doc.font('Helvetica').fontSize(7)
   });
 
-  doc.addPage();
+  // Only add a new page if space on current page is insufficient for the stages section
+  if (doc.y > doc.page.height - 220) {
+    doc.addPage();
+  } else {
+    doc.moveDown(1.5);
+  }
 
   // 6. Construction Timeline & Stages
-  doc.fillColor('#0f172a').fontSize(14).font('Helvetica-Bold').text('Construction Timeline & Milestone Progress', 40, 40);
+  doc.fillColor('#0f172a').fontSize(13).font('Helvetica-Bold').text('Construction Timeline & Milestone Progress', 40);
   doc.moveDown(0.5);
 
   const stageRows = (stages || []).map(s => [
@@ -143,13 +152,16 @@ async function generateProjectPdf(data, res) {
     prepareRow: () => doc.font('Helvetica').fontSize(7.5)
   });
 
-  doc.moveDown(1.5);
+  doc.moveDown(1);
 
   // 7. Disclaimer & Academic Notice
+  if (doc.y > doc.page.height - 90) {
+    doc.addPage();
+  }
   doc.rect(40, doc.y, 515, 60).fill('#f8fafc');
   doc.fillColor('#64748b').fontSize(8).font('Helvetica')
-     .text('Engineering & Academic Project Disclaimer:', 50, doc.y + 10, { width: 495 })
-     .text('This design portfolio, geometric layout, and Bill of Quantities were automatically generated by the Intelligent House Design Assistant (B.Tech IT Major Project). Quantities are derived from structural empirical heuristics and regional Schedules of Rates (Warangal/Telangana). Prior to physical construction, structural stability must be certified by a licensed structural engineer.', 50, doc.y + 22, { width: 495 });
+     .text('Engineering & Estimating Disclaimer:', 50, doc.y + 10, { width: 495 })
+     .text('This design portfolio, geometric layout, and Bill of Quantities were automatically generated by the Intelligent House Design Assistant. Quantities are derived from structural empirical heuristics and regional Schedules of Rates (Warangal/Telangana). Prior to physical construction, structural stability must be certified by a licensed structural engineer.', 50, doc.y + 22, { width: 495 });
 
   // Page numbering on all pages
   const range = doc.bufferedPageRange();

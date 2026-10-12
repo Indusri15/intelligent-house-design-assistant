@@ -16,10 +16,11 @@ import {
 
 export const FloorPlanStudioPage = () => {
   const { id } = useParams();
-  const { currentProject } = useProject();
+  const { currentProject, selectProjectById } = useProject();
   const [floorPlan, setFloorPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
+  const [selectedFloorIdx, setSelectedFloorIdx] = useState(0);
   const [revisionNotes, setRevisionNotes] = useState('');
   const [showRevModal, setShowRevModal] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -39,7 +40,14 @@ export const FloorPlanStudioPage = () => {
   };
 
   useEffect(() => {
-    if (id) fetchPlan();
+    if (id) {
+      setFloorPlan(null); // Clear stale plan state immediately to isolate projects
+      setSelectedFloorIdx(0);
+      if (selectProjectById && (!currentProject || (currentProject._id !== id && currentProject.id !== id))) {
+        selectProjectById(id);
+      }
+      fetchPlan();
+    }
   }, [id]);
 
   const handleRegenerate = async () => {
@@ -97,8 +105,9 @@ export const FloorPlanStudioPage = () => {
   }
 
   const alternatives = floorPlan?.alternatives || [];
-  const currentFloor = floorPlan?.floors?.[0];
-  const rooms = currentFloor?.rooms || [];
+  const floors = floorPlan?.floors || [];
+  const currentScheduleFloor = floors[selectedFloorIdx] || floors[0] || null;
+  const scheduleRooms = currentScheduleFloor?.rooms || [];
 
   return (
     <div className="space-y-6">
@@ -177,19 +186,59 @@ export const FloorPlanStudioPage = () => {
         </div>
       )}
 
+      {/* Spatial Feasibility Conflict Alert Banner (Requirement 5) */}
+      {floorPlan?.validation?.feasibilityWarning && (
+        <div className="p-4 bg-amber-50/90 rounded-2xl border border-amber-300 text-amber-900 flex items-start gap-3 shadow-sm">
+          <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+          <div className="space-y-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900">
+              Spatial Feasibility Warning
+            </h4>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              {floorPlan.validation.feasibilityWarning}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Interactive SVG Blueprint Viewer */}
       <FloorPlanViewer floorPlan={floorPlan} project={currentProject} />
 
       {/* Room Schedule & Mathematical Area Statement Table */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Room Schedule & Area Statement (Ground Floor)</h3>
-            <p className="text-xs text-slate-500">Exact room dimensions, calculated carpet areas, and allocated Vastu zones.</p>
+            <h3 className="text-sm font-bold text-slate-900">
+              Room Schedule & Area Statement — {currentScheduleFloor?.floorName || 'Ground Floor'}
+            </h3>
+            <p className="text-xs text-slate-500">
+              Floor Built-Up: <strong>{currentScheduleFloor?.floorAreaSqFt || 0} sq.ft</strong> | Total Project: <strong>{floorPlan?.totalBuiltUpAreaSqFt || 0} sq.ft</strong> across {floors.length} Floor(s)
+            </p>
           </div>
-          <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">
-            {rooms.length} Allocated Spaces
-          </span>
+
+          <div className="flex items-center gap-2">
+            {/* Floor Switcher Tabs for Table */}
+            {floors.length > 1 && (
+              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                {floors.map((fl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedFloorIdx(idx)}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                      selectedFloorIdx === idx
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {fl.floorName}
+                  </button>
+                ))}
+              </div>
+            )}
+            <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+              {scheduleRooms.length} Allocated Spaces
+            </span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -205,10 +254,10 @@ export const FloorPlanStudioPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {rooms.map((r, i) => (
+              {scheduleRooms.map((r, i) => (
                 <tr key={i} className="hover:bg-slate-50/70 transition-colors">
                   <td className="py-2.5 px-3 font-bold text-slate-900 flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: r.color }}></span>
+                    <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: r.color }}></span>
                     <span>{r.name}</span>
                   </td>
                   <td className="py-2.5 px-3 text-slate-600 capitalize">{r.type.replace('_', ' ')}</td>

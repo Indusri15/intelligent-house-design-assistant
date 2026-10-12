@@ -8,9 +8,25 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
   const mat = rates.materialRates;
   const lab = rates.labourRates;
 
-  const totalBuiltUpAreaSqFt = Number(floorPlan?.totalBuiltUpAreaSqFt || (project.plot?.area ? project.plot.area * 0.75 * (project.accommodation?.floors || 1) : 1500));
-  const groundFloorArea = Number(floorPlan?.groundFloorAreaSqFt || (totalBuiltUpAreaSqFt / (project.accommodation?.floors || 1)));
-  const floors = Number(project.accommodation?.floors || 1);
+  const floors = Math.max(1, Number(project.accommodation?.floors || 1));
+  let totalBuiltUpAreaSqFt = Number(floorPlan?.totalBuiltUpAreaSqFt);
+  if (!totalBuiltUpAreaSqFt || isNaN(totalBuiltUpAreaSqFt) || totalBuiltUpAreaSqFt <= 0) {
+    if (project.plot?.width && project.plot?.length) {
+      const sbFront = Number(project.plot?.setbacks?.front ?? 5);
+      const sbRear = Number(project.plot?.setbacks?.rear ?? 3);
+      const sbLeft = Number(project.plot?.setbacks?.left ?? 3);
+      const sbRight = Number(project.plot?.setbacks?.right ?? 3);
+      const bW = Math.max(12, Math.round(Number(project.plot.width) - sbLeft - sbRight));
+      const bL = Math.max(14, Math.round(Number(project.plot.length) - sbFront - sbRear));
+      totalBuiltUpAreaSqFt = bW * bL * floors;
+    } else if (project.plot?.area) {
+      totalBuiltUpAreaSqFt = Math.round(Number(project.plot.area) * 0.70 * floors);
+    } else {
+      totalBuiltUpAreaSqFt = 1500;
+    }
+  }
+
+  const groundFloorArea = Number(floorPlan?.groundFloorAreaSqFt || Math.round(totalBuiltUpAreaSqFt / floors));
   const numBedrooms = Number(project.accommodation?.bedrooms || 3);
   const numBathrooms = Number(project.accommodation?.bathrooms || 2);
   const userBudget = Number(project.budget || 3500000);
@@ -22,8 +38,8 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
   const customExterior = designSelection?.exterior || null;
   const customRooms = designSelection?.interiorRooms || [];
 
-  // 1. Excavation (Volume in cft: Ground area * 4.5 ft depth for column footings + trenches)
-  const excavationCft = Math.round(groundFloorArea * 1.8);
+  // 1. Excavation (Volume in cft: Ground area foundation footing trenches, 5ft depth)
+  const excavationCft = Math.round(groundFloorArea * 1.5);
   const excavationLabourCost = Math.round(excavationCft * lab.earthwork_excavation.rate);
 
   // 2. Concrete (PCC + RCC Footings, Plinth, Columns, Beams, Slabs)
@@ -599,17 +615,23 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
   const costPerSqFt = Math.round(totalEstimatedCost / totalBuiltUpAreaSqFt);
   const budgetDifference = userBudget - totalEstimatedCost;
 
-  // Compute 3-Tier Comparison Data
-  const basicCostEst = Math.round(totalBuiltUpAreaSqFt * 1650);
-  const medCostEst = Math.round(totalBuiltUpAreaSqFt * 2150);
-  const richCostEst = Math.round(totalBuiltUpAreaSqFt * 2850);
+  // Reconcile 3-Tier Package Pricing with Validated Line-Item Estimates
+  // Invariant: The selected package totalCost and costPerSqFt match totalEstimatedCost and costPerSqFt exactly.
+  const baseRate = costPerSqFt;
+  const basicRate = pkg === 'BASIC' ? baseRate : Math.round(baseRate * 0.80);
+  const medRate = pkg === 'MEDIUM' ? baseRate : Math.round(baseRate * (pkg === 'BASIC' ? 1.25 : 1.0));
+  const richRate = pkg === 'RICH' ? baseRate : Math.round(baseRate * (pkg === 'BASIC' ? 1.62 : 1.32));
+
+  const basicCostEst = pkg === 'BASIC' ? totalEstimatedCost : Math.round(totalBuiltUpAreaSqFt * basicRate);
+  const medCostEst = pkg === 'MEDIUM' ? totalEstimatedCost : Math.round(totalBuiltUpAreaSqFt * medRate);
+  const richCostEst = pkg === 'RICH' ? totalEstimatedCost : Math.round(totalBuiltUpAreaSqFt * richRate);
 
   const packages = {
     basic: {
       name: "BASIC PACKAGE",
-      ratePerSqFt: 1650,
+      ratePerSqFt: basicRate,
       totalCost: basicCostEst,
-      costPerSqFt: 1650,
+      costPerSqFt: basicRate,
       diffFromBudget: userBudget - basicCostEst,
       materialsCost: Math.round(basicCostEst * 0.62),
       labourCost: Math.round(basicCostEst * 0.38),
@@ -626,9 +648,9 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
     },
     medium: {
       name: "MEDIUM PACKAGE",
-      ratePerSqFt: 2150,
+      ratePerSqFt: medRate,
       totalCost: medCostEst,
-      costPerSqFt: 2150,
+      costPerSqFt: medRate,
       diffFromBudget: userBudget - medCostEst,
       materialsCost: Math.round(medCostEst * 0.64),
       labourCost: Math.round(medCostEst * 0.36),
@@ -646,9 +668,9 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
     },
     rich: {
       name: "RICH / LUXURY PACKAGE",
-      ratePerSqFt: 2850,
+      ratePerSqFt: richRate,
       totalCost: richCostEst,
-      costPerSqFt: 2850,
+      costPerSqFt: richRate,
       diffFromBudget: userBudget - richCostEst,
       materialsCost: Math.round(richCostEst * 0.67),
       labourCost: Math.round(richCostEst * 0.33),
@@ -666,9 +688,32 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
     }
   };
 
+  // Realistic cost-saving scenarios when budget exceeds limit
+  const costSavingRecommendations = [
+    {
+      strategy: "Footprint Optimization",
+      title: "Optimize Built-Up Footprint by 10-12%",
+      potentialSaving: Math.round(totalBuiltUpAreaSqFt * 0.12 * costPerSqFt),
+      description: "Trimming secondary circulation lobbies or oversized balconies reduces structural concrete, masonry, plaster, and floor tiles proportionally."
+    },
+    {
+      strategy: "Finishes Value Engineering",
+      title: "Value Engineering on Finishes & Joinery",
+      potentialSaving: Math.round(totalBuiltUpAreaSqFt * 250),
+      description: "Selecting standard vitrified tiles (2x2 ft) and aluminum powder-coated window frames instead of luxury large-format slabs provides major upfront savings."
+    },
+    {
+      strategy: "Phased Interior Execution",
+      title: "Phase Interior Millwork Post-Occupancy",
+      potentialSaving: interiorCost,
+      description: "Executing premium false ceilings, custom wardrobes, and designer wall cladding in Phase 2 defers upfront capital expenditure."
+    }
+  ];
+
   return {
     selectedPackage: pkg,
     totalBuiltUpAreaSqFt,
+    groundFloorAreaSqFt: groundFloorArea,
     totalEstimatedCost,
     costPerSqFt,
     userBudget,
@@ -682,7 +727,9 @@ function calculateProjectBOQ(project, floorPlan, selectedPackage = 'MEDIUM', cus
       contingency
     },
     boqLineItems,
-    packages
+    packages,
+    costSavingRecommendations,
+    disclaimer: "Preliminary architectural estimate based on geometric quantities and standard Schedules of Rates. Subject to final site soil investigation, engineering review, and localized contractor bidding."
   };
 }
 

@@ -77,17 +77,24 @@ exports.addExpense = async (req, res, next) => {
       rate,
       totalAmount,
       paymentStatus,
+      discount,
+      additionalCharges,
       associatedBoqCode,
       associatedStageCode,
       invoiceNumber,
       notes
     } = req.body;
 
-    if (!supplierOrPayee || !materialOrService || !rate) {
+    if (!supplierOrPayee || !materialOrService || rate === undefined || rate === null || rate === '') {
       return res.status(400).json({ success: false, message: 'Please provide payee, material/service description and rate' });
     }
 
-    const calculatedTotal = totalAmount || (Number(quantity || 1) * Number(rate));
+    const qty = Math.max(0, Number(quantity || 1));
+    const rt = Math.max(0, Number(rate || 0));
+    const disc = Math.max(0, Number(discount || 0));
+    const extra = Math.max(0, Number(additionalCharges || 0));
+    const subtotal = qty * rt;
+    const calculatedTotal = totalAmount !== undefined && totalAmount !== '' ? Number(totalAmount) : Math.max(0, subtotal - disc + extra);
     const invoiceUrl = req.file ? `/uploads/${req.file.filename}` : '';
 
     const payload = {
@@ -96,9 +103,12 @@ exports.addExpense = async (req, res, next) => {
       supplierOrPayee,
       category: category || 'Material',
       materialOrService,
-      quantity: Number(quantity || 1),
+      quantity: qty,
       unit: unit || 'unit',
-      rate: Number(rate),
+      rate: rt,
+      subtotal,
+      discount: disc,
+      additionalCharges: extra,
       totalAmount: calculatedTotal,
       paymentStatus: paymentStatus || 'Paid',
       associatedBoqCode: associatedBoqCode || '',
@@ -127,12 +137,28 @@ exports.addExpense = async (req, res, next) => {
 exports.updateExpense = async (req, res, next) => {
   try {
     const { expenseId } = req.params;
-    let updated;
+    const updateData = { ...req.body };
 
+    if (updateData.quantity !== undefined || updateData.rate !== undefined || updateData.discount !== undefined || updateData.additionalCharges !== undefined) {
+      let existing = getMongoStatus() ? await Expense.findById(expenseId) : await fallbackDb.expenses.findById(expenseId);
+      if (existing) {
+        const qty = updateData.quantity !== undefined ? Number(updateData.quantity) : (existing.quantity || 1);
+        const rt = updateData.rate !== undefined ? Number(updateData.rate) : (existing.rate || 0);
+        const disc = updateData.discount !== undefined ? Math.max(0, Number(updateData.discount)) : (existing.discount || 0);
+        const extra = updateData.additionalCharges !== undefined ? Math.max(0, Number(updateData.additionalCharges)) : (existing.additionalCharges || 0);
+        const sub = qty * rt;
+        updateData.subtotal = sub;
+        updateData.discount = disc;
+        updateData.additionalCharges = extra;
+        updateData.totalAmount = Math.max(0, sub - disc + extra);
+      }
+    }
+
+    let updated;
     if (getMongoStatus()) {
-      updated = await Expense.findByIdAndUpdate(expenseId, req.body, { new: true });
+      updated = await Expense.findByIdAndUpdate(expenseId, updateData, { new: true });
     } else {
-      updated = await fallbackDb.expenses.findByIdAndUpdate(expenseId, req.body);
+      updated = await fallbackDb.expenses.findByIdAndUpdate(expenseId, updateData);
     }
 
     res.status(200).json({ success: true, message: 'Expense record updated', expense: updated });

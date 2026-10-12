@@ -2,138 +2,740 @@
   "interior": {
     "living_room": {
       "Modern": {
-        "title": "Modern Minimalist Living Room Concept",
-        "description": "Open-concept living space with neutral tones, clean geometric lines, recessed LED lighting, and large format vitrified tile flooring.",
-        "colors": ["#F8FAFC", "#334155", "#64748B", "#D97706"],
-        "materials": [
-          { "name": "Glazed Vitrified Floor Tiles (4x2 ft)", "spec": "Kajaria / Simpolo GVT Matte Finish", "qty": 220, "unit": "sq.ft", "unitCost": 85, "totalCost": 18700 },
-          { "name": "Saint-Gobain Gypsum False Ceiling", "spec": "12.5mm Gypsum with GI Perimeter & Warm Cove LED", "qty": 200, "unit": "sq.ft", "unitCost": 95, "totalCost": 19000 },
-          { "name": "Royale Luxury Acrylic Emulsion", "spec": "Asian Paints Royale + Accent Wall", "qty": 550, "unit": "sq.ft", "unitCost": 35, "totalCost": 19250 },
-          { "name": "Floating TV Console & Fluted Panel", "spec": "Marine Ply with Teak Veneer & Profile Lighting", "qty": 1, "unit": "lump_sum", "unitCost": 45000, "totalCost": 45000 },
-          { "name": "Architectural Magnetic Track Lights", "spec": "Warm White 3000K Anti-Glare Spots", "qty": 6, "unit": "nos", "unitCost": 2200, "totalCost": 13200 }
+        "title": "Modern Clean Geometry Living Room",
+        "description": "Open-concept living space with clean geometry, flush joinery, recessed LED architectural cove, and large-format vitrified tile flooring.",
+        "image": "/uploads/designs/interior_living_modern.jpg",
+        "filename": "interior_living_modern.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_living_white.jpg", "title": "Modern Pure White & Slate Lounge" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_living_minimalist.jpg", "title": "Minimalist Linear Living Concept" }
         ],
-        "estimatedCost": 115150
+        "materials": [
+          { "name": "Glazed Vitrified Floor Tiles (4x2 ft)", "spec": "Kajaria GVT Matte Finish", "qty": 220, "unit": "sq.ft", "unitCost": 85, "totalCost": 18700 },
+          { "name": "Saint-Gobain Gypsum False Ceiling", "spec": "12.5mm Gypsum with Perimeter Warm Cove LED", "qty": 200, "unit": "sq.ft", "unitCost": 95, "totalCost": 19000 },
+          { "name": "Flush Architectural TV Console & Fluted Panel", "spec": "BWP Marine Ply with Teak Veneer", "qty": 1, "unit": "lump_sum", "unitCost": 45000, "totalCost": 45000 },
+          { "name": "Architectural Recessed Magnetic Track Lights", "spec": "Warm White 3000K Anti-Glare Spots", "qty": 6, "unit": "nos", "unitCost": 2200, "totalCost": 13200 }
+        ],
+        "estimatedCost": 95900
+      },
+      "Minimalist": {
+        "title": "Minimalist Monochromatic Living Room",
+        "description": "Monochromatic, clutter-free living environment with organic textures, floating furniture, concealed storage, and diffuse daylight.",
+        "image": "/uploads/designs/interior_living_minimalist.jpg",
+        "filename": "interior_living_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_living_modern.jpg", "title": "Clean Geometry Open Plan" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_living_white.jpg", "title": "White Monolith Living Space" }
+        ],
+        "materials": [
+          { "name": "Seamless Micro-Concrete / Large Porcelain Flooring", "spec": "Matte Off-White Seamless Texture", "qty": 220, "unit": "sq.ft", "unitCost": 110, "totalCost": 24200 },
+          { "name": "Monolithic Flush Drywall False Ceiling", "spec": "Concealed Track with Dimmable Linear LED", "qty": 200, "unit": "sq.ft", "unitCost": 90, "totalCost": 18000 },
+          { "name": "Concealed Wall Storage & Joinery", "spec": "Handleless Matte Laminate Wall Units", "qty": 1, "unit": "lump_sum", "unitCost": 38000, "totalCost": 38000 }
+        ],
+        "estimatedCost": 80200
+      },
+      "Contemporary": {
+        "title": "Contemporary Warm Neutral Living Room",
+        "description": "Warm neutral tones, curved profiles, mixed metals, plush sectional seating, and sage green architectural accent wall.",
+        "image": "/uploads/designs/interior_living_sage.jpg",
+        "filename": "interior_living_sage.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_living_white.jpg", "title": "Contemporary Alabaster & Wood Living" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_living_modern.jpg", "title": "Warm Wood & Stone Living Suite" }
+        ],
+        "materials": [
+          { "name": "Engineered Oak Plank Flooring", "spec": "Natural Matte Finish Oak 12mm", "qty": 220, "unit": "sq.ft", "unitCost": 135, "totalCost": 29700 },
+          { "name": "Curved Perimeter Gypsum Ceiling with Brass Trim", "spec": "Custom Radius Gypsum Drop", "qty": 200, "unit": "sq.ft", "unitCost": 115, "totalCost": 23000 },
+          { "name": "Royale Sage Green & Cream Texture Emulsion", "spec": "Asian Paints Royale Luxury 2-Coat", "qty": 550, "unit": "sq.ft", "unitCost": 40, "totalCost": 22000 }
+        ],
+        "estimatedCost": 74700
       },
       "Traditional Indian": {
-        "title": "Heritage Traditional Indian Living Room",
-        "description": "Rich warm wood carvings, brass accents, terracotta accents, jali screen partitions, and polished marble flooring.",
-        "colors": ["#FFFBEB", "#B45309", "#78350F", "#991B1B"],
+        "title": "Traditional Indian Heritage Living Room",
+        "description": "Rich teakwood carvings, brass jali screen partitions, terracotta warmth, antique brass lighting, and polished stone plinth.",
+        "image": "/uploads/designs/interior_living_traditional.jpg",
+        "filename": "interior_living_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_living_sage.jpg", "title": "Warm Earth Tones Living Lounge" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_living_white.jpg", "title": "Courtyard Living Space" }
+        ],
         "materials": [
-          { "name": "Indian Polished Marble / Kota Stone", "spec": "Makrana White / Polished Kota with Brass Inlay", "qty": 220, "unit": "sq.ft", "unitCost": 145, "totalCost": 31900 },
-          { "name": "Solid Teak Wood Rafter Ceiling", "spec": "Exposed Teak Wood Beams with Warm Spotlights", "qty": 180, "unit": "sq.ft", "unitCost": 165, "totalCost": 29700 },
-          { "name": "Carved Wooden Jali Partition", "spec": "CNC Teak Wood CNC Cut Floral Jali", "qty": 40, "unit": "sq.ft", "unitCost": 380, "totalCost": 15200 },
-          { "name": "Brass Sconces & Hanging Jhula Fixtures", "spec": "Antique Brass Heavy Cast Fixtures", "qty": 1, "unit": "lump_sum", "unitCost": 35000, "totalCost": 35000 }
+          { "name": "Indian Polished Marble / Kota Stone Flooring", "spec": "Makrana White with Brass Strip Inlay", "qty": 220, "unit": "sq.ft", "unitCost": 145, "totalCost": 31900 },
+          { "name": "Solid Teak Wood Rafter Ceiling", "spec": "Exposed Teak Wood Beams with Warm Spots", "qty": 180, "unit": "sq.ft", "unitCost": 165, "totalCost": 29700 },
+          { "name": "Carved Wooden Jali Partition", "spec": "CNC Cut Floral Brass & Teak Jali", "qty": 40, "unit": "sq.ft", "unitCost": 380, "totalCost": 15200 },
+          { "name": "Brass Hanging Lamp Fixtures & Sconces", "spec": "Antique Cast Brass Finish", "qty": 1, "unit": "lump_sum", "unitCost": 35000, "totalCost": 35000 }
         ],
         "estimatedCost": 111800
       },
       "Luxury": {
-        "title": "Ultra-Luxury Italian Marble Grand Living Lounge",
-        "description": "High-end Italian Statuario marble, acoustic wood slat paneling, smart dimmable magnetic track lights, and plush velvet sectional seating.",
-        "colors": ["#090A0F", "#1E293B", "#F59E0B", "#E2E8F0"],
-        "materials": [
-          { "name": "Imported Italian Statuario Marble", "spec": "Mirror Polished Book-Matched 18mm Slabs", "qty": 240, "unit": "sq.ft", "unitCost": 380, "totalCost": 91200 },
-          { "name": "Acoustic Fluted Veneer Wall Paneling", "spec": "Charcoal Smoked Oak Veneer with Backlit LED", "qty": 120, "unit": "sq.ft", "unitCost": 280, "totalCost": 33600 },
-          { "name": "Smart WiFi Automation Lighting Grid", "spec": "Schneider KNX Dimmable Architectural Downlights", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
+        "title": "Luxury Italian Grand Living Lounge",
+        "description": "Book-matched Italian Statuario marble, fluted oak paneling, brushed gold metal accents, and double-height architectural glazing.",
+        "image": "/uploads/designs/interior_living_luxury.jpg",
+        "filename": "interior_living_luxury.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_living_white.jpg", "title": "Statuario Marble Luxury Grand Room" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_living_sage.jpg", "title": "Fluted Oak Designer Lounge" }
         ],
-        "estimatedCost": 189800
+        "materials": [
+          { "name": "Imported Italian Statuario Marble Slabs", "spec": "Mirror Polished Book-Matched 18mm Slabs", "qty": 240, "unit": "sq.ft", "unitCost": 380, "totalCost": 91200 },
+          { "name": "Acoustic Fluted Oak Wall Paneling with Gold Inlay", "spec": "Smoked Natural Oak with PVD Gold Trims", "qty": 120, "unit": "sq.ft", "unitCost": 310, "totalCost": 37200 },
+          { "name": "Smart Architectural Magnetic Lighting Grid", "spec": "Dimmable Low-Voltage Anti-Glare Fixtures", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
+        ],
+        "estimatedCost": 193400
       }
     },
     "master_bedroom": {
       "Modern": {
         "title": "Modern Master Bedroom Retreat",
-        "description": "Calming neutral palette, wooden vitrified plank flooring, upholstered headboard accent wall, and floor-to-ceiling wardrobes.",
-        "colors": ["#F1F5F9", "#475569", "#0F172A", "#38BDF8"],
+        "description": "Clean geometry, vitrified wooden planks, upholstered headboard accent wall, and flush floor-to-ceiling wardrobes.",
+        "image": "/uploads/designs/interior_master_modern.jpg",
+        "filename": "interior_master_modern.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom.jpg", "title": "Charcoal Fluted Master Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_master_contemporary.jpg", "title": "Contemporary Master Retreat" }
+        ],
         "materials": [
           { "name": "Vitrified Wooden Planks (8x48 in)", "spec": "Somany Rustic Wood Texture", "qty": 180, "unit": "sq.ft", "unitCost": 95, "totalCost": 17100 },
           { "name": "Floor-to-Ceiling Wardrobes with Loft", "spec": "BWP Marine Ply with Anti-Scratch Acrylic Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 85000, "totalCost": 85000 },
-          { "name": "Upholstered King Headboard Wall", "spec": "High-Density Foam Velvet Cushioning with Fluted Border", "qty": 1, "unit": "lump_sum", "unitCost": 32000, "totalCost": 32000 }
+          { "name": "Upholstered King Headboard Wall", "spec": "High-Density Foam Velvet Cushioning", "qty": 1, "unit": "lump_sum", "unitCost": 32000, "totalCost": 32000 }
         ],
         "estimatedCost": 134100
       },
-      "Luxury": {
-        "title": "Presidential Master Suite with Walk-In Wardrobe",
-        "description": "Hardwood engineered flooring, tinted fluted glass walk-in wardrobe with profile LED, ambient perimeter cove ceiling, and reading sconces.",
-        "colors": ["#1E1B4B", "#312E81", "#F59E0B", "#F8FAFC"],
+      "Minimalist": {
+        "title": "Minimalist Zen Master Suite",
+        "description": "Monochromatic clutter-free bedroom with low-profile platform bed, organic linen textures, and concealed wardrobes.",
+        "image": "/uploads/designs/interior_master_minimalist.jpg",
+        "filename": "interior_master_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_master_modern.jpg", "title": "Clean Geometry Master Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_master_contemporary.jpg", "title": "Neutral Tone Minimalist Suite" }
+        ],
         "materials": [
-          { "name": "Engineered Oak Hardwood Flooring", "spec": "14mm Multi-Layer Engineered German Oak", "qty": 200, "unit": "sq.ft", "unitCost": 280, "totalCost": 56000 },
-          { "name": "Walk-In Profile Tinted Glass Wardrobe", "spec": "Rose Gold Aluminium Frame with Integrated Motion Sensor LEDs", "qty": 1, "unit": "lump_sum", "unitCost": 145000, "totalCost": 145000 },
-          { "name": "Italian Wall Sconces & Smart Controls", "spec": "Dimmable Touch Keypads & Bedside Reading Booms", "qty": 1, "unit": "lump_sum", "unitCost": 38000, "totalCost": 38000 }
+          { "name": "Seamless Matte Micro-Screed Floor", "spec": "Natural Light Grey Seamless Texture", "qty": 180, "unit": "sq.ft", "unitCost": 115, "totalCost": 20700 },
+          { "name": "Flush Handleless Wardrobes", "spec": "Push-to-Open Ultra-Matte Soft Touch Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 78000, "totalCost": 78000 }
+        ],
+        "estimatedCost": 98700
+      },
+      "Contemporary": {
+        "title": "Contemporary Warm Master Suite",
+        "description": "Warm neutral tones, curved profiles, mixed metal bedside reading sconces, and ambient perimeter LED cove.",
+        "image": "/uploads/designs/interior_master_contemporary.jpg",
+        "filename": "interior_master_contemporary.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom.jpg", "title": "Fluted Panel Contemporary Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_master_modern.jpg", "title": "Modern Master Suite" }
+        ],
+        "materials": [
+          { "name": "Engineered Hardwood Floor Planks", "spec": "14mm Multi-Layer Engineered German Oak", "qty": 180, "unit": "sq.ft", "unitCost": 160, "totalCost": 28800 },
+          { "name": "Curved Upholstered Feature Headboard", "spec": "Boucle Fabric with Brushed Brass Edge", "qty": 1, "unit": "lump_sum", "unitCost": 42000, "totalCost": 42000 },
+          { "name": "Custom Profile Glass Wardrobe", "spec": "Fluted Glass Aluminium Frame", "qty": 1, "unit": "lump_sum", "unitCost": 95000, "totalCost": 95000 }
+        ],
+        "estimatedCost": 165800
+      },
+      "Traditional Indian": {
+        "title": "Traditional Indian Heritage Master Suite",
+        "description": "Carved teakwood four-poster bed, brass finials, terracotta tones, jali decorative panels, and brass hanging oil lamps.",
+        "image": "/uploads/designs/interior_master_traditional.jpg",
+        "filename": "interior_master_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_master_contemporary.jpg", "title": "Warm Wood Master Bedroom" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom.jpg", "title": "Classic Luxury Bedroom" }
+        ],
+        "materials": [
+          { "name": "Solid Teak Carved King Bed Frame", "spec": "Burma Teak with Hand-Carved Headboard", "qty": 1, "unit": "lump_sum", "unitCost": 75000, "totalCost": 75000 },
+          { "name": "Polished Makrana Marble Floor with Brass Inlay", "spec": "White Marble 18mm", "qty": 180, "unit": "sq.ft", "unitCost": 140, "totalCost": 25200 },
+          { "name": "Heritage Teak Wood Wardrobes with Brass Knobs", "spec": "Louvered Teak Wood Shutters", "qty": 1, "unit": "lump_sum", "unitCost": 88000, "totalCost": 88000 }
+        ],
+        "estimatedCost": 188200
+      },
+      "Luxury": {
+        "title": "Luxury Italian Presidential Master Suite",
+        "description": "Italian Statuario marble accents, fluted oak paneling, gold trim details, tinted glass walk-in wardrobe, and designer chandelier.",
+        "image": "/uploads/designs/interior_bedroom.jpg",
+        "filename": "interior_bedroom.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_master_luxury.jpg", "title": "Italian Statuario Luxury Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_master_contemporary.jpg", "title": "Velvet & Gold Master Suite" }
+        ],
+        "materials": [
+          { "name": "Imported Statuario Marble & Oak Flooring", "spec": "Book-matched 18mm Slabs with Oak Border", "qty": 200, "unit": "sq.ft", "unitCost": 280, "totalCost": 56000 },
+          { "name": "Walk-In Profile Tinted Glass Wardrobe", "spec": "Rose Gold Aluminium Frame with Sensor LED", "qty": 1, "unit": "lump_sum", "unitCost": 145000, "totalCost": 145000 },
+          { "name": "Italian Wall Sconces & Designer Chandelier", "spec": "Brushed Gold Dimmable Keypads", "qty": 1, "unit": "lump_sum", "unitCost": 38000, "totalCost": 38000 }
         ],
         "estimatedCost": 239000
       }
     },
+    "bedroom": {
+      "Modern": {
+        "title": "Modern Guest / Kids Bedroom",
+        "description": "Clean geometry, space-saving built-in study joinery, durable vitrified flooring, and large daylight windows.",
+        "image": "/uploads/designs/interior_bedroom_modern.jpg",
+        "filename": "interior_bedroom_modern.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom_contemporary.jpg", "title": "Contemporary Guest Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom_minimalist.jpg", "title": "Minimalist Kids Room" }
+        ],
+        "materials": [
+          { "name": "Anti-Scratch Vitrified Tile Flooring", "spec": "Matte Finish 2x2 ft Kajaria", "qty": 150, "unit": "sq.ft", "unitCost": 75, "totalCost": 11250 },
+          { "name": "Built-In Study Desk & Wardrobe Combo", "spec": "BWP Marine Ply with Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
+        ],
+        "estimatedCost": 76250
+      },
+      "Minimalist": {
+        "title": "Minimalist Guest / Kids Bedroom",
+        "description": "Monochromatic clutter-free guest room with organic textured linens, concealed storage, and calm neutral lighting.",
+        "image": "/uploads/designs/interior_bedroom_minimalist.jpg",
+        "filename": "interior_bedroom_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom_modern.jpg", "title": "Modern Guest Room" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom_contemporary.jpg", "title": "Neutral Tone Guest Bedroom" }
+        ],
+        "materials": [
+          { "name": "Light Oak Wooden Plank Flooring", "spec": "10mm High-Traffic Laminate", "qty": 150, "unit": "sq.ft", "unitCost": 85, "totalCost": 12750 },
+          { "name": "Handleless Push-Open Wardrobes", "spec": "Matte White Finish", "qty": 1, "unit": "lump_sum", "unitCost": 55000, "totalCost": 55000 }
+        ],
+        "estimatedCost": 67750
+      },
+      "Contemporary": {
+        "title": "Contemporary Guest Bedroom",
+        "description": "Warm neutral palette, curved fabric headboard, mixed metal sconces, and comfortable reading nook.",
+        "image": "/uploads/designs/interior_bedroom_contemporary.jpg",
+        "filename": "interior_bedroom_contemporary.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom_modern.jpg", "title": "Modern Clean Joinery Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom_luxury.jpg", "title": "Luxury Guest Suite" }
+        ],
+        "materials": [
+          { "name": "Glazed Vitrified Tile Flooring", "spec": "4x2 ft Satin Finish", "qty": 150, "unit": "sq.ft", "unitCost": 90, "totalCost": 13500 },
+          { "name": "Curved Upholstered Bed & Nightstands", "spec": "Linen Upholstery with Oak Trim", "qty": 1, "unit": "lump_sum", "unitCost": 48000, "totalCost": 48000 }
+        ],
+        "estimatedCost": 61500
+      },
+      "Traditional Indian": {
+        "title": "Traditional Indian Guest Bedroom",
+        "description": "Solid teak wood twin beds, terracotta tones, brass accents, cane wicker wardrobes, and heritage wall sconces.",
+        "image": "/uploads/designs/interior_bedroom_traditional.jpg",
+        "filename": "interior_bedroom_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom_contemporary.jpg", "title": "Warm Wood Guest Room" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom_modern.jpg", "title": "Classic Guest Room" }
+        ],
+        "materials": [
+          { "name": "Solid Teak Wood Twin Beds", "spec": "Carved Posts with Natural Oil Finish", "qty": 1, "unit": "lump_sum", "unitCost": 55000, "totalCost": 55000 },
+          { "name": "Cane Wicker Wardrobe Shutters", "spec": "Natural Cane Weave with Teak Frame", "qty": 1, "unit": "lump_sum", "unitCost": 62000, "totalCost": 62000 }
+        ],
+        "estimatedCost": 117000
+      },
+      "Luxury": {
+        "title": "Luxury Italian Guest Suite",
+        "description": "Statuario marble vanity desk, fluted oak joinery, brushed gold hardware, and five-star boutique hotel finishes.",
+        "image": "/uploads/designs/interior_bedroom_luxury.jpg",
+        "filename": "interior_bedroom_luxury.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bedroom.jpg", "title": "Presidential Guest Suite" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bedroom_contemporary.jpg", "title": "Contemporary Deluxe Suite" }
+        ],
+        "materials": [
+          { "name": "Italian Marble Accents & Oak Flooring", "spec": "18mm Calacatta Inlay", "qty": 150, "unit": "sq.ft", "unitCost": 220, "totalCost": 33000 },
+          { "name": "Designer Velvet Bed & Brass Wardrobe", "spec": "Custom Fluted Oak with Gold Trim", "qty": 1, "unit": "lump_sum", "unitCost": 95000, "totalCost": 95000 }
+        ],
+        "estimatedCost": 128000
+      }
+    },
     "kitchen": {
       "Modern": {
-        "title": "Sleek Modular L-Shaped Kitchen",
-        "description": "BWP marine plywood modular units, anti-fingerprint acrylic shutters, black galaxy granite countertop, and soft-close tandem drawers.",
-        "colors": ["#FFFFFF", "#0F172A", "#64748B", "#F59E0B"],
+        "title": "Modern Sleek Modular Kitchen",
+        "description": "Clean geometry, flush acrylic cabinetry, black galaxy granite countertops, and soft-close tandem drawers.",
+        "image": "/uploads/designs/interior_kitchen.jpg",
+        "filename": "interior_kitchen.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_kitchen_modern.jpg", "title": "Modern Minimalist Kitchen" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_kitchen_contemporary.jpg", "title": "Contemporary Island Kitchen" }
+        ],
         "materials": [
-          { "name": "BWP Marine Ply Modular Base & Wall Units", "spec": "CenturyPly 710 with Merino Laminate", "qty": 1, "unit": "lump_sum", "unitCost": 125000, "totalCost": 125000 },
-          { "name": "Black Galaxy Polished Granite Counter (18mm)", "spec": "Double Chamfered Edge with Sink Cutout", "qty": 45, "unit": "sq.ft", "unitCost": 185, "totalCost": 8325 },
-          { "name": "Under-Cabinet Profile LED Strip Lighting", "spec": "IP65 Warm White 12V with Concealed Driver", "qty": 20, "unit": "rft", "unitCost": 350, "totalCost": 7000 }
+          { "name": "BWP Marine Ply Modular Base & Wall Units", "spec": "CenturyPly 710 with Acrylic Shutters", "qty": 1, "unit": "lump_sum", "unitCost": 125000, "totalCost": 125000 },
+          { "name": "Black Galaxy Polished Granite Counter (18mm)", "spec": "Chamfered Edge with Sink Cutout", "qty": 45, "unit": "sq.ft", "unitCost": 185, "totalCost": 8325 },
+          { "name": "Under-Cabinet Profile LED Strip Lighting", "spec": "IP65 Warm White 12V", "qty": 20, "unit": "rft", "unitCost": 350, "totalCost": 7000 }
         ],
         "estimatedCost": 140325
       },
-      "Luxury": {
-        "title": "Luxury Island Modular Kitchen with Quartz Counter",
-        "description": "Imported Calacatta quartz waterfall island, PU lacquered handleless cabinetry, built-in appliance tall units, and smart sensor task lighting.",
-        "colors": ["#18181B", "#27272A", "#D4AF37", "#FAFAFA"],
+      "Minimalist": {
+        "title": "Minimalist Monochromatic Kitchen",
+        "description": "Monochromatic, clutter-free kitchen with handleless slab doors, flush induction hob, and integrated appliance towers.",
+        "image": "/uploads/designs/interior_kitchen_minimalist.jpg",
+        "filename": "interior_kitchen_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_kitchen.jpg", "title": "Sleek Flush Kitchen" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_kitchen_modern.jpg", "title": "Pure White Minimalist Kitchen" }
+        ],
         "materials": [
-          { "name": "Imported Quartz Waterfall Island Counter", "spec": "20mm Solid Engineered Calacatta Gold Quartz", "qty": 65, "unit": "sq.ft", "unitCost": 420, "totalCost": 27300 },
-          { "name": "PU Lacquered German Mechanism Cabinets", "spec": "Blum Servo-Drive Motorized Lift-Up & Tandem Soft-Close", "qty": 1, "unit": "lump_sum", "unitCost": 220000, "totalCost": 220000 }
+          { "name": "Matte White Handleless Cabinetry", "spec": "J-Pull Seamless Shutters", "qty": 1, "unit": "lump_sum", "unitCost": 135000, "totalCost": 135000 },
+          { "name": "Seamless Solid Quartz Countertop", "spec": "Pure White 15mm Quartz", "qty": 45, "unit": "sq.ft", "unitCost": 260, "totalCost": 11700 }
+        ],
+        "estimatedCost": 146700
+      },
+      "Contemporary": {
+        "title": "Contemporary Warm Two-Tone Kitchen",
+        "description": "Warm neutral tones, curved profiles, mixed metals, warm wood base cabinets, and charcoal matte overhead units.",
+        "image": "/uploads/designs/interior_kitchen_contemporary.jpg",
+        "filename": "interior_kitchen_contemporary.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_kitchen.jpg", "title": "Modern Two-Tone Kitchen" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_kitchen_luxury.jpg", "title": "Island Breakfast Bar Kitchen" }
+        ],
+        "materials": [
+          { "name": "Two-Tone Walnut & Slate Modular Units", "spec": "Marine Ply with Thermal PU Finish", "qty": 1, "unit": "lump_sum", "unitCost": 155000, "totalCost": 155000 },
+          { "name": "Engineered Composite Stone Countertop", "spec": "Grey Concrete Texture Composite", "qty": 45, "unit": "sq.ft", "unitCost": 240, "totalCost": 10800 }
+        ],
+        "estimatedCost": 165800
+      },
+      "Traditional Indian": {
+        "title": "Traditional Indian Heritage Kitchen",
+        "description": "Solid teak wood framed shutters, brass handles, granite countertops, brass spice pull-outs, and terracotta wall tiles.",
+        "image": "/uploads/designs/interior_kitchen_traditional.jpg",
+        "filename": "interior_kitchen_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_kitchen_contemporary.jpg", "title": "Warm Timber Kitchen" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_kitchen.jpg", "title": "Granite Counter Kitchen" }
+        ],
+        "materials": [
+          { "name": "Teak Wood Framed Modular Cabinets", "spec": "Solid Teak Frame with Antique Brass Handles", "qty": 1, "unit": "lump_sum", "unitCost": 165000, "totalCost": 165000 },
+          { "name": "Jet Black Granite Countertop (20mm)", "spec": "Double Bullnose Edge Polish", "qty": 50, "unit": "sq.ft", "unitCost": 195, "totalCost": 9750 },
+          { "name": "Terracotta & Brass Backsplash Tiles", "spec": "Handmade Clay Glazed Backsplash", "qty": 40, "unit": "sq.ft", "unitCost": 160, "totalCost": 6400 }
+        ],
+        "estimatedCost": 181150
+      },
+      "Luxury": {
+        "title": "Luxury Italian Calacatta Island Kitchen",
+        "description": "Statuario / Calacatta quartz waterfall island, fluted oak accents, gold handles, and integrated Miele / Gaggenau appliances.",
+        "image": "/uploads/designs/interior_kitchen_luxury.jpg",
+        "filename": "interior_kitchen_luxury.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_kitchen.jpg", "title": "High-Gloss Luxury Modular Kitchen" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_kitchen_contemporary.jpg", "title": "Contemporary Island Kitchen" }
+        ],
+        "materials": [
+          { "name": "Imported Calacatta Gold Quartz Waterfall Island", "spec": "20mm Solid Quartz with Mitred Edge", "qty": 65, "unit": "sq.ft", "unitCost": 420, "totalCost": 27300 },
+          { "name": "PU Lacquered & Fluted Oak Mechanized Cabinetry", "spec": "Blum Servo-Drive Motorized Lift-Up", "qty": 1, "unit": "lump_sum", "unitCost": 220000, "totalCost": 220000 }
         ],
         "estimatedCost": 247300
       }
     },
-    "pooja_room": {
-      "Traditional Indian": {
-        "title": "Sacred Vastu Pooja Mandir with Brass Inlay",
-        "description": "Solid Burma teakwood carved mandir, brass bell installations, backlit Om / Gayatri mantra glass panel, and polished Makrana marble pedestal.",
-        "colors": ["#FFFBEB", "#B45309", "#FEF08A", "#78350F"],
-        "materials": [
-          { "name": "Carved Solid Teakwood Mandir Architecture", "spec": "Gopuram Carving & Brass Pillar Pillars", "qty": 1, "unit": "lump_sum", "unitCost": 85000, "totalCost": 85000 },
-          { "name": "Makrana White Marble Pedestal & Floor", "spec": "Pristine White Marble with Yellow Onyx Inlay", "qty": 50, "unit": "sq.ft", "unitCost": 220, "totalCost": 11000 },
-          { "name": "Backlit Sacred Geometry Acrylic / Onyx", "spec": "CNC Cut Brass Backlit Panel with Warm LED", "qty": 1, "unit": "lump_sum", "unitCost": 24000, "totalCost": 24000 }
+    "dining_room": {
+      "Modern": {
+        "title": "Modern Clean Line Dining Room",
+        "description": "Clean geometry, flush glass-top dining table, slim leather chairs, and architectural linear pendant lighting.",
+        "image": "/uploads/designs/interior_dining_modern.jpg",
+        "filename": "interior_dining_modern.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_dining_minimalist.jpg", "title": "Minimalist Dining Space" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_dining_contemporary.jpg", "title": "Contemporary Dining Room" }
         ],
-        "estimatedCost": 120000
+        "materials": [
+          { "name": "6-Seater Modern Glass & Steel Dining Suite", "spec": "Tempered 12mm Glass with Matte Black Base", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 },
+          { "name": "Linear Architectural LED Pendant Chandelier", "spec": "Warm White 3000K Dimmable", "qty": 1, "unit": "nos", "unitCost": 18000, "totalCost": 18000 }
+        ],
+        "estimatedCost": 83000
+      },
+      "Minimalist": {
+        "title": "Minimalist Monochromatic Dining Room",
+        "description": "Monochromatic, clutter-free dining area with organic wood textures, paper-cord chairs, and soft natural daylight.",
+        "image": "/uploads/designs/interior_dining_minimalist.jpg",
+        "filename": "interior_dining_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_dining_modern.jpg", "title": "Clean Geometry Dining Space" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_dining_contemporary.jpg", "title": "Neutral Tone Dining Room" }
+        ],
+        "materials": [
+          { "name": "Solid Bleached Oak 6-Seater Dining Table", "spec": "Minimalist Beveled Edge Natural Finish", "qty": 1, "unit": "lump_sum", "unitCost": 58000, "totalCost": 58000 },
+          { "name": "Minimalist Wabi-Sabi Paper Pendant Fixture", "spec": "Handmade Textured Shade with Warm Glow", "qty": 1, "unit": "nos", "unitCost": 12000, "totalCost": 12000 }
+        ],
+        "estimatedCost": 70000
+      },
+      "Contemporary": {
+        "title": "Contemporary Warm Neutral Dining Room",
+        "description": "Warm neutral tones, curved profiles, mixed metals, marble-top dining table, and curved velvet armchairs.",
+        "image": "/uploads/designs/interior_dining_contemporary.jpg",
+        "filename": "interior_dining_contemporary.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_dining_modern.jpg", "title": "Modern Contemporary Dining" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_dining_luxury.jpg", "title": "Luxury Italian Dining Room" }
+        ],
+        "materials": [
+          { "name": "Composite Marble Oval Dining Table", "spec": "Botticino Texture with Brushed Brass Base", "qty": 1, "unit": "lump_sum", "unitCost": 78000, "totalCost": 78000 },
+          { "name": "Curved Velvet Dining Armchairs (Set of 6)", "spec": "High Resilience Foam & Champagne Legs", "qty": 6, "unit": "nos", "unitCost": 8500, "totalCost": 51000 }
+        ],
+        "estimatedCost": 129000
+      },
+      "Traditional Indian": {
+        "title": "Traditional Indian Heritage Dining Hall",
+        "description": "Carved solid teakwood 8-seater dining table, brass centerpiece, terracotta warmth, and brass hanging bells.",
+        "image": "/uploads/designs/interior_dining_traditional.jpg",
+        "filename": "interior_dining_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_dining_contemporary.jpg", "title": "Warm Timber Dining Hall" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_dining_modern.jpg", "title": "Classic Indian Dining" }
+        ],
+        "materials": [
+          { "name": "Hand-Carved Solid Teakwood 8-Seater Table", "spec": "Rosewood / Teak with Inlaid Brass Borders", "qty": 1, "unit": "lump_sum", "unitCost": 95000, "totalCost": 95000 },
+          { "name": "Cane Backrest Teak Dining Chairs", "spec": "Handwoven Rattan Cane Backs", "qty": 8, "unit": "nos", "unitCost": 6500, "totalCost": 52000 }
+        ],
+        "estimatedCost": 147000
+      },
+      "Luxury": {
+        "title": "Luxury Italian Grand Banquet Dining Room",
+        "description": "Book-matched Italian Statuario marble dining table, fluted oak credenza, brushed gold accents, and crystal chandelier.",
+        "image": "/uploads/designs/interior_dining_luxury.jpg",
+        "filename": "interior_dining_luxury.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_dining_contemporary.jpg", "title": "Contemporary Luxury Dining" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_dining_modern.jpg", "title": "Modern Grand Dining" }
+        ],
+        "materials": [
+          { "name": "Imported Book-Matched Statuario Marble Table", "spec": "10-Seater Italian Marble with PVD Gold Base", "qty": 1, "unit": "lump_sum", "unitCost": 185000, "totalCost": 185000 },
+          { "name": "Fluted Oak Wall Credenza & Wine Display", "spec": "Backlit Tinted Glass with Soft-Close", "qty": 1, "unit": "lump_sum", "unitCost": 95000, "totalCost": 95000 },
+          { "name": "Italian Crystal & Brushed Gold Chandelier", "spec": "Dimmable Multi-Tier Architectural Lighting", "qty": 1, "unit": "nos", "unitCost": 45000, "totalCost": 45000 }
+        ],
+        "estimatedCost": 325000
+      }
+    },
+    "bathroom": {
+      "Modern": {
+        "title": "Modern Clean Geometry Luxury Bathroom",
+        "description": "Clean geometry, large format grey porcelain tiles, floating vanity, flush LED mirror, and frameless glass shower enclosure.",
+        "image": "/uploads/designs/interior_bathroom_modern.jpg",
+        "filename": "interior_bathroom_modern.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bathroom_minimalist.jpg", "title": "Minimalist Wet Room" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bathroom_contemporary.jpg", "title": "Contemporary Spa Bathroom" }
+        ],
+        "materials": [
+          { "name": "Large Format Grey Porcelain Wall & Floor Tiles", "spec": "Anti-Skid Matte 4x2 ft Simpolo", "qty": 200, "unit": "sq.ft", "unitCost": 95, "totalCost": 19000 },
+          { "name": "Floating Quartz Vanity with Kohler Basins", "spec": "BWP Marine Ply with Soft-Close Drawers", "qty": 1, "unit": "lump_sum", "unitCost": 38000, "totalCost": 38000 },
+          { "name": "Toughened Frameless Glass Shower Partition", "spec": "10mm Clear Glass with SS 304 Hinges", "qty": 1, "unit": "lump_sum", "unitCost": 22000, "totalCost": 22000 }
+        ],
+        "estimatedCost": 79000
+      },
+      "Minimalist": {
+        "title": "Minimalist Monochromatic Spa Bathroom",
+        "description": "Monochromatic, clutter-free bathroom with organic seamless micro-cement walls, matte black sanitaryware, and backlit round mirror.",
+        "image": "/uploads/designs/interior_bathroom_minimalist.jpg",
+        "filename": "interior_bathroom_minimalist.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bathroom_modern.jpg", "title": "Modern Minimalist Wet Room" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bathroom_contemporary.jpg", "title": "Contemporary Travertine Bathroom" }
+        ],
+        "materials": [
+          { "name": "Seamless Micro-Cement Waterproof Wall Plaster", "spec": "Off-White Hydrophobic Micro-Topping", "qty": 200, "unit": "sq.ft", "unitCost": 140, "totalCost": 28000 },
+          { "name": "Concealed Matte Black Diverter & Rain Shower", "spec": "Grohe Euphoria Concealed Thermostatic", "qty": 1, "unit": "set", "unitCost": 35000, "totalCost": 35000 }
+        ],
+        "estimatedCost": 63000
+      },
+      "Contemporary": {
+        "title": "Contemporary Travertine & Brass Bathroom",
+        "description": "Warm neutral tones, curved profiles, mixed metals, warm beige travertine tiles, fluted oak vanity, and brushed brass fixtures.",
+        "image": "/uploads/designs/interior_bathroom_contemporary.jpg",
+        "filename": "interior_bathroom_contemporary.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bathroom_modern.jpg", "title": "Modern Contemporary Bath" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bathroom_luxury.jpg", "title": "Luxury Freestanding Tub Bath" }
+        ],
+        "materials": [
+          { "name": "Beige Vein Travertine Porcelain Wall Slabs", "spec": "Honed Finish 4x2 ft", "qty": 200, "unit": "sq.ft", "unitCost": 125, "totalCost": 25000 },
+          { "name": "Fluted Oak Vanity with Brushed Brass Tapware", "spec": "Natural Oak with PVD Brass Faucet", "qty": 1, "unit": "lump_sum", "unitCost": 48000, "totalCost": 48000 }
+        ],
+        "estimatedCost": 73000
+      },
+      "Traditional Indian": {
+        "title": "Traditional Indian Terracotta & Brass Bath",
+        "description": "Terracotta warmth, brass jali accents, hand-hammered copper vessel sink, antique brass bib cocks, and natural stone flooring.",
+        "image": "/uploads/designs/interior_bathroom_traditional.jpg",
+        "filename": "interior_bathroom_traditional.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bathroom_contemporary.jpg", "title": "Warm Stone Indian Bath" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bathroom_modern.jpg", "title": "Classic Stone Bath" }
+        ],
+        "materials": [
+          { "name": "Rough Leathered Granite & Terracotta Tiles", "spec": "Anti-Skid Flamed Granite Floor", "qty": 200, "unit": "sq.ft", "unitCost": 110, "totalCost": 22000 },
+          { "name": "Handmade Hammered Copper Basin & Brass Tap", "spec": "Antique Brass Heavy Cast Diverter", "qty": 1, "unit": "set", "unitCost": 32000, "totalCost": 32000 }
+        ],
+        "estimatedCost": 54000
+      },
+      "Luxury": {
+        "title": "Luxury Italian Statuario Marble Grand Spa",
+        "description": "Book-matched Statuario marble walls, fluted oak double vanity, gold accents, freestanding soaking tub, and smart digital thermostatic shower.",
+        "image": "/uploads/designs/interior_bathroom_luxury.jpg",
+        "filename": "interior_bathroom_luxury.jpg",
+        "alternatives": [
+          { "id": "alt_1", "imageUrl": "/uploads/designs/interior_bathroom_contemporary.jpg", "title": "Contemporary Travertine Spa" },
+          { "id": "alt_2", "imageUrl": "/uploads/designs/interior_bathroom_modern.jpg", "title": "Modern Italian Marble Bath" }
+        ],
+        "materials": [
+          { "name": "Book-Matched Italian Statuario Marble Slabs", "spec": "18mm Mirror Polished Water-Jet Cut", "qty": 220, "unit": "sq.ft", "unitCost": 380, "totalCost": 83600 },
+          { "name": "Freestanding Acrylic Soaking Tub with Gold Filler", "spec": "Ergonomic 1700mm Tub with Floor Spout", "qty": 1, "unit": "nos", "unitCost": 68000, "totalCost": 68000 },
+          { "name": "Brushed Gold Thermostatic Concealed Shower", "spec": "Axor / Gessi 3-Way Digital Diverter", "qty": 1, "unit": "set", "unitCost": 55000, "totalCost": 55000 }
+        ],
+        "estimatedCost": 206600
       }
     }
   },
   "exterior": {
-    "Modern Indian house": {
-      "title": "Modern Indian Cubical Elevation with Box Projections",
-      "description": "Multi-tier box facade projections with natural sandstone cladding, vertical WPC louvers, toughened glass balcony, and warm architectural uplighting.",
-      "colors": ["#F8FAFC", "#334155", "#D97706", "#0F172A"],
-      "materials": [
-        { "name": "Exterior Teak Sandstone Cladding", "spec": "Machine Cut Natural Sandstone with Water Repellent Sealant", "qty": 350, "unit": "sq.ft", "unitCost": 180, "totalCost": 63000 },
-        { "name": "WPC Exterior Fluted Architectural Louvers", "spec": "Weatherproof Wood Plastic Composite 50x50mm", "qty": 180, "unit": "rft", "unitCost": 220, "totalCost": 39600 },
-        { "name": "12mm Toughened Glass Balcony Railing", "spec": "Continuous SS 304 Base U-Channel System", "qty": 30, "unit": "rft", "unitCost": 1200, "totalCost": 36000 },
-        { "name": "Architectural Facade Up-Down Spotlights", "spec": "IP67 Die-Cast Aluminum 10W Warm Spotlights", "qty": 8, "unit": "nos", "unitCost": 2800, "totalCost": 22400 },
-        { "name": "CNC Laser Cut Steel Gate with WPC", "spec": "Heavy Gauge MS Frame with Wood Composite Inlays", "qty": 1, "unit": "lump_sum", "unitCost": 65000, "totalCost": 65000 }
-      ],
-      "estimatedCost": 226000
+    "Modern Indian": {
+      "1": {
+        "title": "Single-Story Modern Indian House Bungalow",
+        "description": "Single-floor ground elevation with stone cladding, warm teakwood louvers, low-profile cantilever porch, and landscaped driveway approach.",
+        "image": "/uploads/designs/exterior_modern_1f.jpg",
+        "filename": "exterior_modern_1f.jpg",
+        "floors": 1,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_contemporary_1f.jpg", "title": "Contemporary Ground Floor Elevation" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_traditional_1f.jpg", "title": "Traditional Ground Floor Elevation" }
+        ],
+        "materials": [
+          { "name": "Exterior Natural Sandstone Cladding", "spec": "Machine Cut Natural Sandstone", "qty": 250, "unit": "sq.ft", "unitCost": 180, "totalCost": 45000 },
+          { "name": "WPC Exterior Architectural Louvers", "spec": "Weatherproof Wood Composite", "qty": 120, "unit": "rft", "unitCost": 220, "totalCost": 26400 },
+          { "name": "Cantilever Entry Porch & Soffit Lighting", "spec": "MS Hollow Section with Warm Spots", "qty": 1, "unit": "lump_sum", "unitCost": 35000, "totalCost": 35000 }
+        ],
+        "estimatedCost": 106400
+      },
+      "2": {
+        "title": "Two-Story (G+1) Modern Indian Duplex Villa",
+        "description": "Two-floor duplex elevation featuring cantilevered upper balcony with glass railing, vertical teakwood louvers, stone cladding, and ground car porch.",
+        "image": "/uploads/designs/exterior_modern_2f.jpg",
+        "filename": "exterior_modern_2f.jpg",
+        "floors": 2,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_white_teak.jpg", "title": "White & Teak Modern Duplex Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_sage_cream.jpg", "title": "Sage Green Modern Villa" }
+        ],
+        "materials": [
+          { "name": "Exterior Teak Sandstone Cladding", "spec": "Machine Cut Natural Sandstone", "qty": 350, "unit": "sq.ft", "unitCost": 180, "totalCost": 63000 },
+          { "name": "WPC Fluted Architectural Louvers", "spec": "Weatherproof Composite 50x50mm", "qty": 180, "unit": "rft", "unitCost": 220, "totalCost": 39600 },
+          { "name": "12mm Toughened Glass Balcony Railing", "spec": "SS 304 Base U-Channel System", "qty": 30, "unit": "rft", "unitCost": 1200, "totalCost": 36000 }
+        ],
+        "estimatedCost": 138600
+      },
+      "3": {
+        "title": "Three-Story (G+2) Modern Indian Luxury Villa",
+        "description": "Three-floor triplex elevation with vertical teakwood louvers spanning upper tiers, multi-level cantilevered balconies, and architectural facade uplighting.",
+        "image": "/uploads/designs/exterior_modern_3f.jpg",
+        "filename": "exterior_modern_3f.jpg",
+        "floors": 3,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_minimalist_3f.jpg", "title": "Three-Story Monolithic Geometric Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_contemporary_3f.jpg", "title": "Three-Story Staggered Contemporary Villa" }
+        ],
+        "materials": [
+          { "name": "Three-Tier Sandstone & Travertine Cladding", "spec": "Multi-Floor Dry Cladding System", "qty": 550, "unit": "sq.ft", "unitCost": 190, "totalCost": 104500 },
+          { "name": "Multi-Floor Vertical Teak Louver Grid", "spec": "Full Height WPC Architectural Grid", "qty": 280, "unit": "rft", "unitCost": 220, "totalCost": 61600 },
+          { "name": "Second & Third Floor Glass Balcony Railings", "spec": "Continuous Frameless Glass System", "qty": 55, "unit": "rft", "unitCost": 1250, "totalCost": 68750 }
+        ],
+        "estimatedCost": 234850
+      }
+    },
+    "Contemporary": {
+      "1": {
+        "title": "Single-Story Contemporary Bungalow",
+        "description": "Single-floor contemporary elevation with horizontal cubical volumes, floor-to-ceiling glass glazing, flat roofline, and lawn terrace.",
+        "image": "/uploads/designs/exterior_contemporary_1f.jpg",
+        "filename": "exterior_contemporary_1f.jpg",
+        "floors": 1,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_modern_1f.jpg", "title": "Modern Single Story Elevation" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_minimalist_1f.jpg", "title": "Minimalist Single Story Elevation" }
+        ],
+        "materials": [
+          { "name": "Floor-to-Ceiling DGU Glass Glazing", "spec": "Double Glazed Low-E Aluminium Profile", "qty": 180, "unit": "sq.ft", "unitCost": 650, "totalCost": 117000 },
+          { "name": "Cedar Wood Exterior Paneling", "spec": "Weatherproof Treated Timber", "qty": 150, "unit": "sq.ft", "unitCost": 240, "totalCost": 36000 }
+        ],
+        "estimatedCost": 153000
+      },
+      "2": {
+        "title": "Two-Story (G+1) Contemporary Duplex Home",
+        "description": "Two-floor contemporary duplex with staggered cubical box projections, double-height entry, and upper glass balcony.",
+        "image": "/uploads/designs/exterior_contemporary_2f.jpg",
+        "filename": "exterior_contemporary_2f.jpg",
+        "floors": 2,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_modern_2f.jpg", "title": "Modern Duplex Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_minimalist_2f.jpg", "title": "Minimalist Duplex Villa" }
+        ],
+        "materials": [
+          { "name": "Double-Height Glass Curtain Wall", "spec": "Aluminium Curtain Glazing", "qty": 220, "unit": "sq.ft", "unitCost": 750, "totalCost": 165000 },
+          { "name": "Grooved Weatherproof Acrylic Texture Plaster", "spec": "Asian Paints Apex Ultima Protek", "qty": 450, "unit": "sq.ft", "unitCost": 65, "totalCost": 29250 }
+        ],
+        "estimatedCost": 194250
+      },
+      "3": {
+        "title": "Three-Story (G+2) Contemporary White & Teak Villa",
+        "description": "Three-floor contemporary triplex featuring asymmetrical cubical box projections, ground glass living pavilion, first-floor cantilever terrace with pergola, and upper setback penthouse tier.",
+        "image": "/uploads/designs/exterior_contemporary_3f.jpg",
+        "filename": "exterior_contemporary_3f.jpg",
+        "floors": 3,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_modern_3f.jpg", "title": "Modern Three-Story Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_minimalist_3f.jpg", "title": "Minimalist Three-Story Villa" }
+        ],
+        "materials": [
+          { "name": "Triple-Tier Curtain Glazing System", "spec": "Low-E DGU Curtain Wall", "qty": 350, "unit": "sq.ft", "unitCost": 800, "totalCost": 280000 },
+          { "name": "Exterior Box Projection Composite Cladding", "spec": "White Stucco & Teakwood Architectural Louvers", "qty": 400, "unit": "sq.ft", "unitCost": 260, "totalCost": 104000 }
+        ],
+        "estimatedCost": 384000
+      }
     },
     "Traditional Indian": {
-      "title": "Heritage Traditional Indian Courtyard Villa Elevation",
-      "description": "Sloped Mangalore tile roof eaves, carved teak verandah pillars, exposed wire-cut red brick plinth, brass finials, and stone paved sitout.",
-      "colors": ["#FFFBEB", "#B45309", "#78350F", "#15803D"],
-      "materials": [
-        { "name": "Clay Mangalore Roof Tiles with Understructure", "spec": "Terracotta Glazed Weatherproof Sloped Roof Tiles", "qty": 450, "unit": "sq.ft", "unitCost": 140, "totalCost": 63000 },
-        { "name": "Solid Teak Wood Carved Verandah Pillars", "spec": "Traditional Fluted Pillars with Stone Base Padukas", "qty": 4, "unit": "nos", "unitCost": 18000, "totalCost": 72000 },
-        { "name": "Wire-cut Exposed Red Brick Masonry & Plinth", "spec": "Pressed Machine Made Clay Bricks with Raked Mortar Grouting", "qty": 300, "unit": "sq.ft", "unitCost": 95, "totalCost": 28500 }
-      ],
-      "estimatedCost": 163500
+      "1": {
+        "title": "Single-Story Traditional Indian Heritage Bungalow",
+        "description": "Single-floor heritage elevation with sloped red Mangalore tile roof eaves, carved teak verandah pillars, exposed brick plinth, and stone paved courtyard.",
+        "image": "/uploads/designs/exterior_traditional_1f.jpg",
+        "filename": "exterior_traditional_1f.jpg",
+        "floors": 1,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_traditional.jpg", "title": "Traditional Courtyard Bungalow with Tulsi Pedestal" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_1f.jpg", "title": "Modern Indian Single Story" }
+        ],
+        "materials": [
+          { "name": "Clay Mangalore Roof Tiles with Understructure", "spec": "Glazed Weatherproof Sloped Roof Tiles", "qty": 450, "unit": "sq.ft", "unitCost": 140, "totalCost": 63000 },
+          { "name": "Solid Teak Wood Carved Verandah Pillars", "spec": "Fluted Pillars with Stone Padukas", "qty": 4, "unit": "nos", "unitCost": 18000, "totalCost": 72000 },
+          { "name": "Wire-Cut Exposed Red Brick Masonry Plinth", "spec": "Pressed Clay Bricks with Raked Mortar", "qty": 300, "unit": "sq.ft", "unitCost": 95, "totalCost": 28500 }
+        ],
+        "estimatedCost": 163500
+      },
+      "2": {
+        "title": "Two-Story (G+1) Traditional Indian Duplex Villa",
+        "description": "Two-floor traditional duplex elevation with ground verandah and distinct first-floor carved timber balcony, sloped Mangalore tile eaves, and terracotta finials.",
+        "image": "/uploads/designs/exterior_traditional_2f.jpg",
+        "filename": "exterior_traditional_2f.jpg",
+        "floors": 2,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_traditional_1f.jpg", "title": "Traditional Single Story Heritage" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_2f.jpg", "title": "Modern Indian Duplex" }
+        ],
+        "materials": [
+          { "name": "Two-Tier Mangalore Sloped Roof Eaves", "spec": "Clay Glazed Tiles with Timber Trusses", "qty": 650, "unit": "sq.ft", "unitCost": 140, "totalCost": 91000 },
+          { "name": "Ground & First Floor Teak Carved Pillars", "spec": "8 Nos Solid Teak Traditional Columns", "qty": 8, "unit": "nos", "unitCost": 16000, "totalCost": 128000 },
+          { "name": "Carved Wooden Balcony Balustrade", "spec": "Teak Wood Turned Balusters", "qty": 35, "unit": "rft", "unitCost": 1100, "totalCost": 38500 }
+        ],
+        "estimatedCost": 257500
+      },
+      "3": {
+        "title": "Three-Story (G+2) Traditional Indian Grand Haveli Villa",
+        "description": "Three-floor traditional grand haveli elevation featuring three distinct architectural tiers, carved timber balustrades on both upper floors, and multi-pitched Mangalore eaves.",
+        "image": "/uploads/designs/exterior_traditional_3f.jpg",
+        "filename": "exterior_traditional_3f.jpg",
+        "floors": 3,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_traditional_2f.jpg", "title": "Traditional Two-Story Duplex" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_3f.jpg", "title": "Modern Three-Story Villa" }
+        ],
+        "materials": [
+          { "name": "Three-Tier Pitched Mangalore Roof Architecture", "spec": "Terracotta Glazed Weatherproof Shingles", "qty": 850, "unit": "sq.ft", "unitCost": 145, "totalCost": 123250 },
+          { "name": "Multi-Story Carved Teak Verandah Columns", "spec": "Traditional Fluted Pillars across 3 Levels", "qty": 12, "unit": "nos", "unitCost": 16000, "totalCost": 192000 },
+          { "name": "Second & Third Floor Timber Balcony Railings", "spec": "Handcrafted Solid Teak Railing Grid", "qty": 60, "unit": "rft", "unitCost": 1100, "totalCost": 66000 }
+        ],
+        "estimatedCost": 381250
+      }
+    },
+    "Minimalist": {
+      "1": {
+        "title": "Single-Story Minimalist White Bungalow",
+        "description": "Single-floor minimalist elevation with monolithic clean white volumes, crisp dark shadow grooves, vertical black louvers, and manicured gravel approach.",
+        "image": "/uploads/designs/exterior_minimalist_1f.jpg",
+        "filename": "exterior_minimalist_1f.jpg",
+        "floors": 1,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_contemporary_1f.jpg", "title": "Contemporary Flat Roof Bungalow" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_1f.jpg", "title": "Modern Clean Bungalow" }
+        ],
+        "materials": [
+          { "name": "Monolithic Smooth Acrylic Weatherproof Stucco", "spec": "Pure White Seamless Exterior Plaster", "qty": 450, "unit": "sq.ft", "unitCost": 75, "totalCost": 33750 },
+          { "name": "Architectural Vertical MS Louvers (Matte Black)", "spec": "50x25mm Powder Coated Slats", "qty": 120, "unit": "rft", "unitCost": 220, "totalCost": 26400 }
+        ],
+        "estimatedCost": 60150
+      },
+      "2": {
+        "title": "Two-Story (G+1) Minimalist Monolithic Duplex",
+        "description": "Two-floor minimalist duplex elevation with two stacked clean white geometric volumes, crisp shadow grooves, upper glass balcony, and recessed entry.",
+        "image": "/uploads/designs/exterior_minimalist_2f.jpg",
+        "filename": "exterior_minimalist_2f.jpg",
+        "floors": 2,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_contemporary_2f.jpg", "title": "Contemporary Duplex Home" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_2f.jpg", "title": "Modern Duplex Villa" }
+        ],
+        "materials": [
+          { "name": "Monolithic Stucco with Crisp Shadow Groove Reveals", "spec": "Seamless Acrylic Finish with Reglets", "qty": 650, "unit": "sq.ft", "unitCost": 80, "totalCost": 52000 },
+          { "name": "Frameless Toughened Glass Balcony System", "spec": "12mm Glass with Concealed Base Channel", "qty": 30, "unit": "rft", "unitCost": 1200, "totalCost": 36000 }
+        ],
+        "estimatedCost": 88000
+      },
+      "3": {
+        "title": "Three-Story (G+2) Minimalist Geometric Triplex",
+        "description": "Three-floor minimalist triplex villa with three stacked monolithic white geometric tiers, crisp horizontal shadow grooves, and upper open terrace.",
+        "image": "/uploads/designs/exterior_minimalist_3f.jpg",
+        "filename": "exterior_minimalist_3f.jpg",
+        "floors": 3,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_contemporary_3f.jpg", "title": "Contemporary Triplex Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_3f.jpg", "title": "Modern Triplex Villa" }
+        ],
+        "materials": [
+          { "name": "Three-Tier Monolithic Stucco Exterior System", "spec": "Weather-Resistant Hydrophobic Texture", "qty": 950, "unit": "sq.ft", "unitCost": 85, "totalCost": 80750 },
+          { "name": "Upper Tier Vertical Architectural Louver Screen", "spec": "Matte Charcoal Powder Coated Aluminium", "qty": 240, "unit": "rft", "unitCost": 240, "totalCost": 57600 }
+        ],
+        "estimatedCost": 138350
+      }
     },
     "Premium Luxury": {
-      "title": "Ultra-Luxury Cantilever Villa with Double-Height Glazing",
-      "description": "Floating cantilevered first floor, large format porcelain slab facade, frameless glass curtain walling, motorized teak entrance, and infinity perimeter landscape.",
-      "colors": ["#0F172A", "#1E293B", "#F59E0B", "#F8FAFC"],
-      "materials": [
-        { "name": "Large Format Porcelain Facade Slabs", "spec": "1200x2400mm Slim Porcelain Tiles with Dry Cladding Clamps", "qty": 550, "unit": "sq.ft", "unitCost": 320, "totalCost": 176000 },
-        { "name": "Double-Height Acoustic Curtain Glazing", "spec": "DGU Double Glazed Low-E Glass with Thermal Break Aluminum Profile", "qty": 220, "unit": "sq.ft", "unitCost": 850, "totalCost": 187000 },
-        { "name": "Motorized Teak Wood Sliding Gate", "spec": "Italian Motor Automation with Burma Teak Paneling", "qty": 1, "unit": "lump_sum", "unitCost": 150000, "totalCost": 150000 }
-      ],
-      "estimatedCost": 513000
+      "1": {
+        "title": "Single-Story Sprawling Ultra-Luxury Villa",
+        "description": "Single-floor sprawling luxury villa elevation with ultra-wide cantilevered porcelain slab roof, floor-to-ceiling glass, and reflecting pool approach.",
+        "image": "/uploads/designs/exterior_luxury_1f.jpg",
+        "filename": "exterior_luxury_1f.jpg",
+        "floors": 1,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_luxury.jpg", "title": "Ultra-Luxury Cantilever Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_contemporary_1f.jpg", "title": "Contemporary Flat Roof Villa" }
+        ],
+        "materials": [
+          { "name": "Large Format Slim Porcelain Facade Slabs", "spec": "1200x2400mm Concrete Texture Porcelain", "qty": 350, "unit": "sq.ft", "unitCost": 320, "totalCost": 112000 },
+          { "name": "Floor-to-Ceiling Slim Profile DGU Glass", "spec": "Thermal Break Low-E Glass", "qty": 250, "unit": "sq.ft", "unitCost": 850, "totalCost": 212500 }
+        ],
+        "estimatedCost": 324500
+      },
+      "2": {
+        "title": "Two-Story (G+1) Ultra-Luxury Cantilever Villa",
+        "description": "Two-floor ultra-wide cantilevered villa with porcelain slabs, double-height glass curtain walling, floating first-floor balcony, and infinity pool approach.",
+        "image": "/uploads/designs/exterior_luxury.jpg",
+        "filename": "exterior_luxury.jpg",
+        "floors": 2,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_luxury_1f.jpg", "title": "Single Story Luxury Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_luxury_3f.jpg", "title": "Three-Story Luxury Estate" }
+        ],
+        "materials": [
+          { "name": "Large Format Porcelain Facade Slabs", "spec": "1200x2400mm Dry Cladding Clamps", "qty": 550, "unit": "sq.ft", "unitCost": 320, "totalCost": 176000 },
+          { "name": "Double-Height Acoustic Curtain Glazing", "spec": "DGU Double Glazed Low-E Glass", "qty": 220, "unit": "sq.ft", "unitCost": 850, "totalCost": 187000 },
+          { "name": "Floating Cantilever First-Floor Balcony", "spec": "Post-Tensioned Slab with Concealed Soffit LED", "qty": 1, "unit": "lump_sum", "unitCost": 150000, "totalCost": 150000 }
+        ],
+        "estimatedCost": 513000
+      },
+      "3": {
+        "title": "Three-Story (G+2) Ultra-Luxury Grand Estate Villa",
+        "description": "Three-floor ultra-luxury estate villa with multi-tier cantilevered porcelain slabs, triple-height architectural glass curtain, and panoramic penthouse terrace.",
+        "image": "/uploads/designs/exterior_luxury_3f.jpg",
+        "filename": "exterior_luxury_3f.jpg",
+        "floors": 3,
+        "alternatives": [
+          { "id": "alt_ext_1", "imageUrl": "/uploads/designs/exterior_luxury.jpg", "title": "Two-Story Luxury Cantilever Villa" },
+          { "id": "alt_ext_2", "imageUrl": "/uploads/designs/exterior_modern_3f.jpg", "title": "Modern Three-Story Luxury Villa" }
+        ],
+        "materials": [
+          { "name": "Multi-Tier Slim Porcelain & Travertine Slabs", "spec": "Full Height Mechanical Cladding", "qty": 850, "unit": "sq.ft", "unitCost": 340, "totalCost": 289000 },
+          { "name": "Triple-Height Thermal Low-E Curtain Wall", "spec": "Structural Silicone Glazing", "qty": 420, "unit": "sq.ft", "unitCost": 900, "totalCost": 378000 }
+        ],
+        "estimatedCost": 667000
+      }
     }
   }
 }

@@ -1,7 +1,24 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:8000/api/ai';
+// Derive the base backend server URL (stripping '/api')
+export const SERVER_ROOT_URL = API_BASE_URL.replace(/\/api\/?$/, '');
+
+// Utility: Safely resolve image URLs across Vercel (frontend) and Render (backend)
+export const resolveImageUrl = (url) => {
+  if (!url) return null;
+  // If already absolute or data URI, return as-is
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  // If frontend public static asset, return as-is
+  if (url.startsWith('/assets/')) {
+    return url;
+  }
+  // If relative path (e.g. /uploads/designs/...), prepend backend server root
+  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  return `${SERVER_ROOT_URL}${cleanUrl}`;
+};
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,14 +27,40 @@ const api = axios.create({
   },
 });
 
-// Attach Authorization Token
+// Attach Authorization Token with sanitization
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (token && typeof token === 'string' && token !== 'null' && token !== 'undefined' && token.trim() !== '') {
+    config.headers.Authorization = `Bearer ${token.trim()}`;
+  } else {
+    delete config.headers.Authorization;
   }
   return config;
 }, (error) => Promise.reject(error));
+
+// Response Interceptor: Catch 401 Unauthorized / Token Expired
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const isAuthUrl = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+      if (!isAuthUrl) {
+        // Invalidate stale token from local storage
+        localStorage.removeItem('token');
+        // Dispatch session expired event so UI can trigger re-authentication without losing work
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('archplan:auth_expired', {
+            detail: {
+              message: error.response?.data?.message || 'Not authorized, token failed or expired',
+              code: error.response?.data?.code || 'TOKEN_EXPIRED'
+            }
+          }));
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth APIs
 export const authApi = {
@@ -92,10 +135,18 @@ export const designApi = {
   getProviders: () => api.get('/design/providers'),
 };
 
-// Report APIs
+// Report APIs with Authenticated Blob Downloads
 export const reportApi = {
-  getPdfUrl: (projectId) => `${API_BASE_URL}/reports/${projectId}/pdf`,
-  getExcelUrl: (projectId) => `${API_BASE_URL}/reports/${projectId}/excel`,
+  downloadPdf: (projectId) => api.get(`/reports/${projectId}/pdf`, { responseType: 'blob' }),
+  downloadExcel: (projectId) => api.get(`/reports/${projectId}/excel`, { responseType: 'blob' }),
+  getPdfUrl: (projectId) => {
+    const token = localStorage.getItem('token');
+    return `${API_BASE_URL}/reports/${projectId}/pdf${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  },
+  getExcelUrl: (projectId) => {
+    const token = localStorage.getItem('token');
+    return `${API_BASE_URL}/reports/${projectId}/excel${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  },
 };
 
 // Chatbot APIs
@@ -109,14 +160,16 @@ export const adminApi = {
   updateRates: (rates) => api.put('/admin/rates', rates),
 };
 
-// Python AI Direct CV API
+// Python AI Express-to-FastAPI Bridge API
 export const directAiApi = {
-  analyzeSiteImage: (formData) => axios.post(`${AI_SERVICE_URL}/analyze-site-image`, formData, {
+  checkHealth: () => api.get('/ai/health'),
+  analyzeSiteImage: (formData) => api.post('/ai/analyze-site-image', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
-  segmentFloorplan: (formData) => axios.post(`${AI_SERVICE_URL}/segment-floorplan`, formData, {
+  segmentFloorplan: (formData) => api.post('/ai/segment-floorplan', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  }),
+  getAde20kInfo: () => api.get('/ai/ade20k/info')
 };
 
 export default api;

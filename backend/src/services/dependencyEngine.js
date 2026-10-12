@@ -11,7 +11,7 @@ const DEFAULT_STAGES = [
     category: 'Pre-Construction',
     dependencies: [],
     requiredMaterials: [
-      { name: 'Blueprint Blueprints & Sanction Drawing', quantity: '4 sets', status: 'Pending' },
+      { name: 'Architectural Blueprints & Sanction Drawings', quantity: '4 sets', status: 'Pending' },
       { name: 'Municipal Building Permit Approval', quantity: '1 document', status: 'Pending' }
     ]
   },
@@ -246,8 +246,8 @@ const DEFAULT_STAGES = [
 
 function generateProjectStages(projectId, totalEstimatedCost = 3500000) {
   return DEFAULT_STAGES.map((stg, idx) => {
-    // Proportional cost distribution
-    const costWeights = [0.03, 0.01, 0.02, 0.03, 0.08, 0.06, 0.08, 0.10, 0.07, 0.09, 0.05, 0.03, 0.08, 0.03, 0.07, 0.04, 0.05, 0.08, 0.04, 0.03, 0.01];
+    // Proportional cost distribution normalized to exactly 1.00 (100%)
+    const costWeights = [0.02, 0.01, 0.02, 0.03, 0.07, 0.06, 0.07, 0.09, 0.07, 0.08, 0.05, 0.03, 0.07, 0.03, 0.07, 0.04, 0.05, 0.07, 0.04, 0.02, 0.01];
     const estimatedCost = Math.round(totalEstimatedCost * (costWeights[idx] || 0.04));
 
     return {

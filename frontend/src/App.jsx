@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProjectProvider } from './context/ProjectContext';
 
@@ -20,7 +20,6 @@ import InteriorDesignStudioPage from './pages/InteriorDesignStudioPage';
 import ExteriorDesignStudioPage from './pages/ExteriorDesignStudioPage';
 import VastuAnalysisPage from './pages/VastuAnalysisPage';
 import CostEstimationPage from './pages/CostEstimationPage';
-import PackageComparisonPage from './pages/PackageComparisonPage';
 import ProgressTrackerPage from './pages/ProgressTrackerPage';
 import ExpenseTrackerPage from './pages/ExpenseTrackerPage';
 import SiteAnalysisPage from './pages/SiteAnalysisPage';
@@ -28,15 +27,24 @@ import ReportsPage from './pages/ReportsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 
 const AppLayout = ({ children, onOpenChat }) => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
   const isProjectWorkspace = location.pathname.startsWith('/project/');
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <Navbar onOpenChat={onOpenChat} />
-      
-      <div className="flex-1 flex overflow-hidden">
-        {isProjectWorkspace && <Sidebar />}
+    <div className="min-h-screen flex bg-[#F8FAFC]">
+      {isProjectWorkspace && (
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
+        />
+      )}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <Navbar
+          onOpenChat={onOpenChat}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onToggleSidebar={() => setIsSidebarCollapsed(prev => !prev)}
+        />
         <main className={`flex-1 overflow-y-auto ${isProjectWorkspace ? 'p-6 lg:p-8' : ''}`}>
           {children}
         </main>
@@ -74,7 +82,7 @@ export const App = () => {
                 <Route path="/project/:id/design" element={<DesignStudioPage />} />
                 <Route path="/project/:id/vastu" element={<VastuAnalysisPage />} />
                 <Route path="/project/:id/boq" element={<CostEstimationPage />} />
-                <Route path="/project/:id/packages" element={<PackageComparisonPage />} />
+                <Route path="/project/:id/packages" element={<Navigate to="../boq" replace relative="path" />} />
                 <Route path="/project/:id/progress" element={<ProgressTrackerPage />} />
                 <Route path="/project/:id/expenses" element={<ExpenseTrackerPage />} />
                 <Route path="/project/:id/site-analysis" element={<SiteAnalysisPage />} />

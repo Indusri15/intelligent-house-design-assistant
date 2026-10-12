@@ -59,6 +59,7 @@ class FallbackCollection {
   }
 
   async findById(id) {
+    if (!id) return null;
     const items = this._read();
     return items.find(item => item._id === id || item.id === id) || null;
   }

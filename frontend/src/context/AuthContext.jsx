@@ -27,6 +27,19 @@ export const AuthProvider = ({ children }) => {
     fetchCurrentUser();
   }, [token]);
 
+  // Listen for global auth expiration events dispatched by api response interceptor
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setToken(null);
+      setUser(null);
+    };
+
+    window.addEventListener('archplan:auth_expired', handleAuthExpired);
+    return () => {
+      window.removeEventListener('archplan:auth_expired', handleAuthExpired);
+    };
+  }, []);
+
   const login = async (email, password) => {
     const res = await authApi.login({ email, password });
     if (res.data.success) {

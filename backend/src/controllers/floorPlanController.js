@@ -23,6 +23,11 @@ exports.generateFloorPlan = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Project not found' });
     }
 
+    const userId = req.user._id || req.user.id;
+    if (project.user && project.user.toString() !== userId.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Unauthorized: You can only generate floor plans for your own projects' });
+    }
+
     // Generate new layout
     const generated = generateGeometricFloorPlan(project);
 

@@ -221,13 +221,18 @@ exports.generateInteriorDesign = async (req, res, next) => {
       title,
       roomType,
       style,
-      wallColors
+      wallColors,
+      project
     });
 
     // 3. Generate Alternatives if requested
     let alternatives = [];
     if (generateAlternatives) {
-      alternatives = await imageGenService.generateAlternatives(prompt, 'interior', promptOptions, 2);
+      if (genResult.alternatives && genResult.alternatives.length > 0) {
+        alternatives = genResult.alternatives;
+      } else {
+        alternatives = await imageGenService.generateAlternatives(prompt, 'interior', promptOptions, 2);
+      }
     }
 
     // 4. Compute itemized material cost specifications
@@ -259,8 +264,8 @@ exports.generateInteriorDesign = async (req, res, next) => {
       isFavorite: false,
       isFinal: false,
       status: genResult.status || 'completed',
-      provider: genResult.provider || 'pollinations',
-      model: genResult.model || 'flux',
+      provider: genResult.provider || 'curated-library',
+      model: genResult.model || 'arch-render-v1',
       sceneAnalysis: sceneAnalysis || null,
       costImpact: {
         estimatedCost: costSpec.estimatedCost,
@@ -294,8 +299,11 @@ exports.generateExteriorDesign = async (req, res, next) => {
     const userId = req.user._id || req.user.id;
     const project = await getProjectAndVerifyOwnership(projectId, userId, req.user.role);
 
+    const projectFloors = Number(project?.accommodation?.floors || req.body.floors || 2);
+    const projectFacing = project?.plot?.facingDirection || req.body.facingDirection || req.body.facing || 'East';
+
     const {
-      style = 'Modern Indian house',
+      style = project?.preferences?.style || 'Modern Indian',
       elevationStyle = 'Modern Cubical Facade',
       exteriorColors = ['#F8FAFC', '#334155', '#D97706'],
       facadeMaterial = 'Teak Sandstone Cladding & WPC Louvers',
@@ -304,14 +312,12 @@ exports.generateExteriorDesign = async (req, res, next) => {
       boundaryGate = 'CNC Laser Cut Steel Gate with WPC Composite',
       lighting = 'Architectural Up-Down Spotlights & Soffit LEDs',
       landscaping = 'Perimeter Planter Beds with Lawn Path',
-      finishTier = 'MEDIUM',
-      floors = project?.accommodation?.floors || 2,
+      finishTier = project?.selectedPackage || 'MEDIUM',
+      floors = projectFloors,
       customInstructions = '',
       sceneAnalysis = null,
       generateAlternatives = true
     } = req.body;
-
-    const title = `${style} Villa Front Elevation`;
 
     const promptOptions = {
       style,
@@ -324,27 +330,36 @@ exports.generateExteriorDesign = async (req, res, next) => {
       lighting,
       landscaping,
       finishTier,
-      floors,
+      floors: projectFloors,
+      facingDirection: projectFacing,
       customInstructions
     };
 
     const prompt = imageGenService.buildExteriorPrompt(promptOptions, project);
 
-    // 1. Primary Generation
+    // 1. Primary Generation strictly honoring project facing, style & floor count
     const genResult = await imageGenService.generateDesignImage(prompt, 'exterior', {
-      title,
       style,
-      exteriorColors
+      floors: projectFloors,
+      facingDirection: projectFacing,
+      exteriorColors,
+      project
     });
+
+    const title = genResult.title || `${projectFacing} Facing • ${style} Villa Front Elevation`;
 
     // 2. Alternatives
     let alternatives = [];
     if (generateAlternatives) {
-      alternatives = await imageGenService.generateAlternatives(prompt, 'exterior', promptOptions, 2);
+      if (genResult.alternatives && genResult.alternatives.length > 0) {
+        alternatives = genResult.alternatives;
+      } else {
+        alternatives = await imageGenService.generateAlternatives(prompt, 'exterior', promptOptions, 2);
+      }
     }
 
-    // 3. Compute exterior material cost impact
-    const costSpec = imageGenService.computeItemizedMaterials('exterior', style, style, null);
+    // 3. Compute exterior material cost impact based on style and floor count
+    const costSpec = imageGenService.computeItemizedMaterials('exterior', style, projectFloors, null);
 
     const designPayload = {
       projectId,
@@ -356,6 +371,8 @@ exports.generateExteriorDesign = async (req, res, next) => {
       budgetTier: finishTier,
       prompt,
       settings: {
+        floors: projectFloors,
+        facingDirection: projectFacing,
         facadeMaterial,
         balconyRailing,
         entranceDoor,
@@ -372,8 +389,8 @@ exports.generateExteriorDesign = async (req, res, next) => {
       isFavorite: false,
       isFinal: false,
       status: genResult.status || 'completed',
-      provider: genResult.provider || 'pollinations',
-      model: genResult.model || 'flux',
+      provider: genResult.provider || 'curated-library',
+      model: genResult.model || 'arch-render-v1',
       sceneAnalysis: sceneAnalysis || null,
       costImpact: {
         estimatedCost: costSpec.estimatedCost,

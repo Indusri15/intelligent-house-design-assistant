@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projectApi } from '../services/api';
 import { useProject } from '../context/ProjectContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   Building2, 
   MapPin, 
@@ -13,78 +14,161 @@ import {
   ArrowRight, 
   ArrowLeft,
   AlertTriangle,
-  Layers
+  Layers,
+  Lock,
+  Mail,
+  X,
+  RotateCcw,
+  ShieldCheck,
+  Check,
+  Info
 } from 'lucide-react';
+
+const ARCHPLAN_WIZARD_DRAFT = 'archplan_wizard_draft';
+
+const DEFAULT_FORM_DATA = {
+  // Step 1: Details
+  name: 'My Dream Villa',
+  location: 'Warangal, Telangana',
+  pincode: '506001',
+  budget: 3500000,
+  description: 'Modern family residence designed for thermal comfort, natural lighting, and Vastu harmony.',
+
+  // Step 2: Plot
+  plot: {
+    length: 50,
+    width: 30,
+    shape: 'RECTANGULAR',
+    facingDirection: 'East',
+    roadAccess: 'Front 30ft Municipal Road',
+    setbacks: { front: 5, rear: 3, left: 3, right: 3 }
+  },
+
+  // Step 3: Accommodation
+  accommodation: {
+    floors: 2,
+    bedrooms: 3,
+    bathrooms: 2,
+    livingRoom: true,
+    diningRoom: true,
+    kitchen: true,
+    poojaRoom: true,
+    utilityArea: true,
+    parking: true,
+    balcony: true,
+    staircase: true,
+    studyRoom: false,
+    otherRequirements: '',
+    familyMembers: 4
+  },
+
+  // Step 4: Preferences
+  preferences: {
+    style: 'Contemporary',
+    flooring: 'Glazed Vitrified 4x2 Tiles',
+    kitchen: 'Modular with Granite Counter',
+    interiorColours: 'Warm Neutrals & Charcoal Accents',
+    furnitureStyle: 'Clean Minimalist Contemporary',
+    lighting: 'Recessed Warm LED with False Ceiling',
+    ventilation: 'Cross-Ventilation Focused',
+    energyEfficiency: 'Solar Ready with Thermal Glazing'
+  },
+
+  // Step 5: Vastu Preferences
+  vastuPreferences: {
+    enabled: true,
+    entranceZone: 'NE',
+    kitchenOrientation: 'SE',
+    masterBedroomOrientation: 'SW',
+    poojaOrientation: 'NE',
+    staircasePlacement: 'S'
+  },
+
+  // Selected Default Package
+  selectedPackage: 'MEDIUM'
+};
 
 export const NewProjectWizardPage = () => {
   const navigate = useNavigate();
   const { fetchProjects, setCurrentProject } = useProject();
-  const [currentStep, setCurrentStep] = useState(1);
+  const { user, login } = useAuth();
+
+  // Wizard Draft State Restoration
+  const [formData, setFormData] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(ARCHPLAN_WIZARD_DRAFT);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.formData) return parsed.formData;
+      }
+    } catch (e) {
+      console.warn('Failed to parse wizard draft:', e);
+    }
+    return DEFAULT_FORM_DATA;
+  });
+
+  const [currentStep, setCurrentStep] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(ARCHPLAN_WIZARD_DRAFT);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.currentStep && parsed.currentStep >= 1 && parsed.currentStep <= 6) {
+          return parsed.currentStep;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse wizard draft step:', e);
+    }
+    return 1;
+  });
+
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(() => {
+    return typeof window !== 'undefined' && Boolean(sessionStorage.getItem(ARCHPLAN_WIZARD_DRAFT));
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Wizard Form State
-  const [formData, setFormData] = useState({
-    // Step 1: Details
-    name: 'My Dream Villa',
-    location: 'Warangal, Telangana',
-    pincode: '506001',
-    budget: 3500000,
-    description: 'Modern family residence designed for thermal comfort, natural lighting, and Vastu harmony.',
+  // In-place Re-authentication State
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [reauthEmail, setReauthEmail] = useState(user?.email || '');
+  const [reauthPassword, setReauthPassword] = useState('');
+  const [reauthLoading, setReauthLoading] = useState(false);
+  const [reauthError, setReauthError] = useState(null);
 
-    // Step 2: Plot
-    plot: {
-      length: 50,
-      width: 30,
-      shape: 'RECTANGULAR',
-      facingDirection: 'East',
-      roadAccess: 'Front 30ft Municipal Road',
-      setbacks: { front: 5, rear: 3, left: 3, right: 3 }
-    },
+  // Sync draft to sessionStorage continuously
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(ARCHPLAN_WIZARD_DRAFT, JSON.stringify({ formData, currentStep }));
+    } catch (e) {
+      console.warn('Failed to persist wizard draft to sessionStorage:', e);
+    }
+  }, [formData, currentStep]);
 
-    // Step 3: Accommodation
-    accommodation: {
-      floors: 2,
-      bedrooms: 3,
-      bathrooms: 2,
-      livingRoom: true,
-      diningRoom: true,
-      kitchen: true,
-      poojaRoom: true,
-      utilityArea: true,
-      parking: true,
-      balcony: true,
-      staircase: true,
-      studyRoom: false,
-      otherRequirements: '',
-      familyMembers: 4
-    },
+  // Keep reauth email synced with logged in user if available
+  useEffect(() => {
+    if (user?.email && !reauthEmail) {
+      setReauthEmail(user.email);
+    }
+  }, [user, reauthEmail]);
 
-    // Step 4: Preferences
-    preferences: {
-      style: 'Contemporary',
-      flooring: 'Glazed Vitrified 4x2 Tiles',
-      kitchen: 'Modular with Granite Counter',
-      interiorColours: 'Warm Neutrals & Charcoal Accents',
-      furnitureStyle: 'Clean Minimalist Contemporary',
-      lighting: 'Recessed Warm LED with False Ceiling',
-      ventilation: 'Cross-Ventilation Focused',
-      energyEfficiency: 'Solar Ready with Thermal Glazing'
-    },
+  // Listen for global auth expiration events dispatched by api interceptor
+  useEffect(() => {
+    const handleAuthExpired = (e) => {
+      setAuthModalOpen(true);
+      setError(e.detail?.message || 'Not authorized, token failed or expired');
+    };
+    window.addEventListener('archplan:auth_expired', handleAuthExpired);
+    return () => window.removeEventListener('archplan:auth_expired', handleAuthExpired);
+  }, []);
 
-    // Step 5: Vastu Preferences
-    vastuPreferences: {
-      enabled: true,
-      entranceZone: 'NE',
-      kitchenOrientation: 'SE',
-      masterBedroomOrientation: 'SW',
-      poojaOrientation: 'NE',
-      staircasePlacement: 'S'
-    },
-
-    // Selected Default Package
-    selectedPackage: 'MEDIUM'
-  });
+  const resetToDefaults = () => {
+    sessionStorage.removeItem(ARCHPLAN_WIZARD_DRAFT);
+    setFormData(DEFAULT_FORM_DATA);
+    setCurrentStep(1);
+    setHasRestoredDraft(false);
+    setError(null);
+  };
 
   const plotArea = (Number(formData.plot.length) || 0) * (Number(formData.plot.width) || 0);
   const buildableW = Math.max(10, (Number(formData.plot.width) || 0) - (Number(formData.plot.setbacks.left) || 3) - (Number(formData.plot.setbacks.right) || 3));
@@ -140,10 +224,19 @@ export const NewProjectWizardPage = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (overrideToken) => {
     try {
       setLoading(true);
       setError(null);
+
+      // Verify token exists in localStorage or override
+      const activeToken = overrideToken || localStorage.getItem('token');
+      if (!activeToken || activeToken === 'null' || activeToken === 'undefined' || activeToken.trim() === '') {
+        setAuthModalOpen(true);
+        setError('Not authorized, token failed or expired');
+        setLoading(false);
+        return;
+      }
 
       const res = await projectApi.create({
         ...formData,
@@ -154,14 +247,45 @@ export const NewProjectWizardPage = () => {
       });
 
       if (res.data.success) {
+        sessionStorage.removeItem(ARCHPLAN_WIZARD_DRAFT);
         await fetchProjects();
         setCurrentProject(res.data.project);
         navigate(`/project/${res.data.project._id || res.data.project.id}`);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create project. Please verify server connection.');
+      const isAuthErr = err.response?.status === 401 || 
+                        err.response?.data?.code === 'TOKEN_EXPIRED' || 
+                        err.response?.data?.code === 'TOKEN_INVALID' ||
+                        err.response?.data?.code === 'NO_TOKEN' ||
+                        err.response?.data?.message?.includes('Not authorized') ||
+                        err.response?.data?.message?.includes('token');
+      if (isAuthErr) {
+        setAuthModalOpen(true);
+        setError(err.response?.data?.message || 'Not authorized, token failed or expired');
+      } else {
+        setError(err.response?.data?.message || 'Failed to create project. Please verify server connection.');
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReauthSubmit = async (e) => {
+    e.preventDefault();
+    setReauthLoading(true);
+    setReauthError(null);
+    try {
+      const loginRes = await login(reauthEmail, reauthPassword);
+      if (loginRes?.token) {
+        setAuthModalOpen(false);
+        setReauthPassword('');
+        // Automatically proceed with project creation and generation
+        await handleSubmit(loginRes.token);
+      }
+    } catch (err) {
+      setReauthError(err.response?.data?.message || 'Authentication failed. Please verify your credentials.');
+    } finally {
+      setReauthLoading(false);
     }
   };
 
@@ -216,11 +340,52 @@ export const NewProjectWizardPage = () => {
         </div>
       </div>
 
+      {/* Draft Restored Banner */}
+      {hasRestoredDraft && (
+        <div className="mb-4 p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Info className="w-4 h-4 shrink-0 text-blue-600" />
+            <span>
+              Restored your saved project draft from session storage. You can continue customizing or start generation.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={resetToDefaults}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 font-semibold text-[11px] shrink-0 transition-colors"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset to Defaults</span>
+          </button>
+        </div>
+      )}
+
       {/* Error Notice */}
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 shrink-0 text-red-500" />
-          <span>{error}</span>
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between gap-3">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-red-500 mt-0.5" />
+            <div>
+              <p className="font-bold text-red-900">
+                {error.includes('token') || error.includes('authorized') ? 'Session Authentication Required' : 'Action Failed'}
+              </p>
+              <p className="mt-0.5">{error}</p>
+              {(error.includes('token') || error.includes('authorized')) && (
+                <p className="text-[11px] text-red-600 font-medium mt-1">
+                  Your project requirements are safely preserved in draft memory. Sign in to resume and proceed directly with blueprint generation.
+                </p>
+              )}
+            </div>
+          </div>
+          {(error.includes('token') || error.includes('authorized')) && (
+            <button
+              type="button"
+              onClick={() => setAuthModalOpen(true)}
+              className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs shrink-0 shadow-sm transition-colors"
+            >
+              Sign In to Resume
+            </button>
+          )}
         </div>
       )}
 
@@ -637,24 +802,71 @@ export const NewProjectWizardPage = () => {
               <p className="text-xs text-slate-500">Confirm project parameters. The system will compile geometric layouts, Vastu reports, BOQ, and timelines.</p>
             </div>
 
-            {/* Summary Cards */}
+            {/* Comprehensive Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Site & Dimensions Card */}
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1">Site & Dimensions</h4>
+                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5 flex items-center justify-between">
+                  <span>Site & Plot Dimensions</span>
+                  <span className="text-[11px] font-normal text-slate-500">{formData.accommodation.floors} Floors</span>
+                </h4>
                 <p><span className="text-slate-500">Project:</span> <strong>{formData.name}</strong></p>
                 <p><span className="text-slate-500">Location:</span> {formData.location} ({formData.pincode})</p>
-                <p><span className="text-slate-500">Plot:</span> {formData.plot.width}' x {formData.plot.length}' (<strong>{plotArea} sq.ft</strong>)</p>
-                <p><span className="text-slate-500">Facing:</span> {formData.plot.facingDirection}</p>
-                <p><span className="text-slate-500">Total Built-Up:</span> ~<strong>{totalEstimatedBuiltUp} sq.ft</strong> ({formData.accommodation.floors} floors)</p>
+                <p><span className="text-slate-500">Plot:</span> {formData.plot.width}' x {formData.plot.length}' (<strong>{plotArea} sq.ft</strong>, {formData.plot.shape})</p>
+                <p><span className="text-slate-500">Facing:</span> <strong>{formData.plot.facingDirection}</strong> | Access: {formData.plot.roadAccess}</p>
+                <p><span className="text-slate-500">Setbacks:</span> F: {formData.plot.setbacks?.front}' | R: {formData.plot.setbacks?.rear}' | L: {formData.plot.setbacks?.left}' | R: {formData.plot.setbacks?.right}'</p>
+                <p><span className="text-slate-500">Total Built-Up:</span> ~<strong>{totalEstimatedBuiltUp} sq.ft</strong> (~{buildableAreaPerFloor} sq.ft / floor)</p>
               </div>
 
+              {/* Accommodation & Selected Amenities Card */}
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1">Accommodation & Finances</h4>
-                <p><span className="text-slate-500">Target Budget:</span> <strong className="text-blue-600">₹ {Number(formData.budget).toLocaleString('en-IN')}</strong></p>
-                <p><span className="text-slate-500">Bedrooms / Baths:</span> {formData.accommodation.bedrooms} Beds, {formData.accommodation.bathrooms} Baths</p>
-                <p><span className="text-slate-500">Style:</span> {formData.preferences.style}</p>
-                <p><span className="text-slate-500">Vastu Optimization:</span> {formData.vastuPreferences.enabled ? 'Active (NE/SE/SW)' : 'Disabled'}</p>
-                <p><span className="text-slate-500">Initial Package:</span> <strong>{formData.selectedPackage} Tier</strong></p>
+                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5 flex items-center justify-between">
+                  <span>Accommodation & Amenities</span>
+                  <span className="text-[11px] font-semibold text-blue-600">{formData.accommodation.bedrooms} Beds, {formData.accommodation.bathrooms} Baths</span>
+                </h4>
+                <p><span className="text-slate-500">Family Size:</span> {formData.accommodation.familyMembers} Persons</p>
+                <div>
+                  <span className="text-slate-500 block mb-1">Selected Rooms & Amenities:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {formData.accommodation.livingRoom && <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-semibold">Living Room</span>}
+                    {formData.accommodation.diningRoom && <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-semibold">Dining Room</span>}
+                    {formData.accommodation.kitchen && <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-semibold">Modular Kitchen</span>}
+                    {formData.accommodation.poojaRoom && <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-semibold">Pooja Room</span>}
+                    {formData.accommodation.utilityArea && <span className="px-2 py-0.5 rounded-md bg-slate-200 text-slate-800 text-[10px] font-semibold">Utility / Wash</span>}
+                    {formData.accommodation.parking && <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Car Parking</span>}
+                    {formData.accommodation.balcony && <span className="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-semibold">Balcony</span>}
+                    {formData.accommodation.staircase && <span className="px-2 py-0.5 rounded-md bg-slate-200 text-slate-800 text-[10px] font-semibold">Staircase</span>}
+                    {formData.accommodation.studyRoom && <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 text-[10px] font-semibold">Study / Office</span>}
+                  </div>
+                </div>
+                {formData.accommodation.otherRequirements && (
+                  <p className="text-[11px] text-slate-600 italic">"{formData.accommodation.otherRequirements}"</p>
+                )}
+              </div>
+
+              {/* Design Styles & Finishes Card */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5">Design & Finishes</h4>
+                <p><span className="text-slate-500">Style:</span> <strong>{formData.preferences.style}</strong></p>
+                <p><span className="text-slate-500">Flooring:</span> {formData.preferences.flooring}</p>
+                <p><span className="text-slate-500">Kitchen:</span> {formData.preferences.kitchen}</p>
+                <p><span className="text-slate-500">Palette:</span> {formData.preferences.interiorColours}</p>
+                <p><span className="text-slate-500">Lighting & Ventilation:</span> {formData.preferences.lighting} | {formData.preferences.ventilation}</p>
+              </div>
+
+              {/* Vastu & Budget Card */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5 flex items-center justify-between">
+                  <span>Vastu & Budget Target</span>
+                  <span className="text-[11px] font-bold text-blue-600">{formData.selectedPackage} Tier</span>
+                </h4>
+                <p><span className="text-slate-500">Budget Target:</span> <strong className="text-blue-700 font-bold">₹ {Number(formData.budget).toLocaleString('en-IN')}</strong></p>
+                <p><span className="text-slate-500">Vastu Shastra:</span> {formData.vastuPreferences.enabled ? (
+                  <strong className="text-emerald-700">Active (Entrance: {formData.vastuPreferences.entranceZone}, Kitchen: {formData.vastuPreferences.kitchenOrientation}, Master: {formData.vastuPreferences.masterBedroomOrientation})</strong>
+                ) : (
+                  <span className="text-slate-400">Disabled</span>
+                )}</p>
+                <p><span className="text-slate-500">Pooja Placement:</span> {formData.vastuPreferences.poojaOrientation || 'NE'} | Staircase: {formData.vastuPreferences.staircasePlacement || 'S'}</p>
               </div>
             </div>
 
@@ -689,7 +901,7 @@ export const NewProjectWizardPage = () => {
           ) : (
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit()}
               disabled={loading}
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white shadow-md shadow-blue-500/20 transition-all"
             >
@@ -709,6 +921,106 @@ export const NewProjectWizardPage = () => {
         </div>
 
       </div>
+
+      {/* Session Expired / Re-authentication In-Place Modal */}
+      {authModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">Session Authentication Required</h3>
+                  <p className="text-[11px] text-slate-500">Your wizard project requirements are safely saved</p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setAuthModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleReauthSubmit} className="p-6 space-y-4">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-xs">
+                <p className="font-semibold">All entered parameters are preserved!</p>
+                <p className="text-[11px] text-blue-600 mt-0.5">
+                  Sign in to authenticate. Blueprint and BOQ generation will resume automatically upon login.
+                </p>
+              </div>
+
+              {reauthError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+                  <span>{reauthError}</span>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Account Email</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={reauthEmail}
+                    onChange={(e) => setReauthEmail(e.target.value)}
+                    placeholder="name@domain.com"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    required
+                    value={reauthPassword}
+                    onChange={(e) => setReauthPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="submit"
+                  disabled={reauthLoading}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-colors"
+                >
+                  {reauthLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Verifying & Generating Plans...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Sign In & Generate Blueprints</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/login', { state: { from: '/wizard', reason: 'session_expired' } })}
+                  className="w-full text-center py-2 text-xs text-slate-500 hover:text-slate-800 font-medium transition-colors"
+                >
+                  Or open full Login Page (Draft remains preserved)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -20,16 +20,19 @@ exports.getEstimate = async (req, res, next) => {
       estimate = estimates[estimates.length - 1] || null;
     }
 
-    if (!estimate) {
-      let project = getMongoStatus() ? await Project.findById(projectId) : await fallbackDb.projects.findById(projectId);
-      let floorPlan = getMongoStatus() ? await FloorPlan.findOne({ projectId }) : (await fallbackDb.floorPlans.find({ projectId }))[0];
+    let project = getMongoStatus() ? await Project.findById(projectId) : await fallbackDb.projects.findById(projectId);
+    let floorPlan = getMongoStatus() ? await FloorPlan.findOne({ projectId }).sort({ createdAt: -1 }) : (await fallbackDb.floorPlans.find({ projectId })).pop();
 
-      if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
-      const calculated = calculateProjectBOQ(project, floorPlan, project.selectedPackage);
+    if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-      estimate = getMongoStatus() ? 
-        await CostEstimate.create({ projectId, ...calculated }) : 
-        await fallbackDb.costEstimates.create({ projectId, ...calculated });
+    if (!estimate || (floorPlan && floorPlan.totalBuiltUpAreaSqFt && estimate.totalBuiltUpAreaSqFt !== floorPlan.totalBuiltUpAreaSqFt)) {
+      const calculated = calculateProjectBOQ(project, floorPlan, project.selectedPackage || 'MEDIUM');
+
+      if (getMongoStatus()) {
+        estimate = await CostEstimate.findOneAndUpdate({ projectId }, calculated, { new: true, upsert: true });
+      } else {
+        estimate = await fallbackDb.costEstimates.create({ projectId, ...calculated });
+      }
     }
 
     res.status(200).json({ success: true, estimate });

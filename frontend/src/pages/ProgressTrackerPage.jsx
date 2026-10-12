@@ -217,45 +217,77 @@ export const ProgressTrackerPage = () => {
               </div>
 
               {/* Status Controls */}
-              <div className="flex items-center gap-3">
-                <select
-                  value={stage.status}
-                  onChange={(e) => handleUpdateStatus(stage._id || stage.id, e.target.value)}
-                  className={`text-xs font-bold px-3 py-1.5 rounded-lg border focus:outline-none ${
-                    isComplete
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                      : isInProgress
-                      ? 'bg-blue-50 text-blue-800 border-blue-300'
-                      : 'bg-slate-50 text-slate-700 border-slate-300'
-                  }`}
-                >
-                  <option value="Not Started">Not Started</option>
-                  <option value="Ready">Ready</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Blocked">Blocked</option>
-                  <option value="Completed">Completed</option>
-                </select>
+              {(() => {
+                const hasDeps = stage.dependencies && stage.dependencies.length > 0;
+                const unmetDeps = hasDeps
+                  ? stage.dependencies.filter(depCode => stages.find(s => s.code === depCode)?.status !== 'Completed')
+                  : [];
+                const isEligible = unmetDeps.length === 0 || stage.exceptionOverride?.isOverridden;
 
-                {!isComplete && (
-                  <button
-                    onClick={() => handleComplete(stage)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-colors"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Complete</span>
-                  </button>
-                )}
+                return (
+                  <div className="flex items-center gap-2.5">
+                    <select
+                      value={stage.status}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === 'Completed' && !isEligible) {
+                          showToast(`Cannot mark complete: prerequisite stages (${unmetDeps.join(', ')}) are incomplete.`, true);
+                          return;
+                        }
+                        handleUpdateStatus(stage._id || stage.id, val);
+                      }}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg border focus:outline-none ${
+                        isComplete
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          : isInProgress
+                          ? 'bg-blue-50 text-blue-800 border-blue-300'
+                          : 'bg-slate-50 text-slate-700 border-slate-300'
+                      }`}
+                    >
+                      <option value="Not Started">Not Started</option>
+                      <option value="Ready">Ready</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Blocked">Blocked</option>
+                      <option value="Completed" disabled={!isEligible && !isComplete}>
+                        Completed {!isEligible && !isComplete ? '(Prerequisites Pending)' : ''}
+                      </option>
+                    </select>
 
-                {stage.dependencies && stage.dependencies.length > 0 && !isComplete && (
-                  <button
-                    onClick={() => { setSelectedStage(stage); setShowExceptionModal(true); }}
-                    className="p-1.5 text-slate-400 hover:text-amber-600 rounded-lg"
-                    title="Record Prerequisite Exception"
-                  >
-                    <ShieldAlert className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+                    {isComplete ? (
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-semibold">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Completed</span>
+                      </span>
+                    ) : isEligible ? (
+                      <button
+                        onClick={() => handleComplete(stage)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-colors"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Complete</span>
+                      </button>
+                    ) : (
+                      <span
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-[11px] font-medium border border-slate-200 cursor-help"
+                        title={`Prerequisites incomplete: ${unmetDeps.join(', ')}. Complete earlier stages first or record an engineering exception override.`}
+                      >
+                        <Lock className="w-3 h-3 text-slate-400" />
+                        <span>Prereq: {unmetDeps.join(', ')}</span>
+                      </span>
+                    )}
+
+                    {stage.dependencies && stage.dependencies.length > 0 && !isComplete && (
+                      <button
+                        onClick={() => { setSelectedStage(stage); setShowExceptionModal(true); }}
+                        className="p-1.5 text-slate-400 hover:text-amber-600 rounded-lg"
+                        title="Record Prerequisite Exception Override"
+                      >
+                        <ShieldAlert className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
